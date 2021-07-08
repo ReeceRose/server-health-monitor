@@ -7,8 +7,7 @@ import (
 	"time"
 
 	"github.com/PR-Developers/server-health-monitor/data-collector/internal/client"
-
-	"github.com/shirou/gopsutil/v3/host"
+	"github.com/PR-Developers/server-health-monitor/data-collector/internal/host"
 )
 
 type Host struct {
@@ -18,16 +17,9 @@ type Host struct {
 func main() {
 	fmt.Println("Server Health Monitor - Data Collector Tool")
 
-	// TODO: (MVP) Move this logic
-	hostInformation, err := host.Info()
-	if err != nil {
-		panic(err)
-	}
+	host := host.GetInformation()
 	// TODO: Read from command line
 	var delay time.Duration = 30 // delay in seconds
-	host := Host{
-		Hostname: hostInformation.Hostname,
-	}
 	payload := new(bytes.Buffer)
 	json.NewEncoder(payload).Encode(host)
 	client := client.NewClient()

@@ -8,6 +8,7 @@ import (
 
 	"github.com/PR-Developers/server-health-monitor/data-collector/internal/client"
 	"github.com/PR-Developers/server-health-monitor/data-collector/internal/host"
+	"github.com/PR-Developers/server-health-monitor/data-collector/internal/logger"
 )
 
 type Host struct {
@@ -15,7 +16,8 @@ type Host struct {
 }
 
 func main() {
-	fmt.Println("Server Health Monitor - Data Collector Tool")
+	logger := logger.New()
+	logger.Info("Server Health Monitor - Data Collector Tool")
 
 	host := host.GetInformation()
 	// TODO: Read from command line
@@ -28,10 +30,9 @@ func main() {
 		// Collect new data
 
 		// Make request
-		// TODO: better logging
-		fmt.Println("Sending new health data")
+		logger.Info("Sending new health data")
 		_, statusCode, _ := client.Post("health", payload)
-		fmt.Printf("Sent health data and got a status code of %v\n", statusCode)
+		logger.Info(fmt.Sprintf("Sent health data and got a status code of %v\n", statusCode))
 		// Delay for X seconds
 		time.Sleep(time.Second * delay)
 	}

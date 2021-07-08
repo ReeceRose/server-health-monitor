@@ -16,7 +16,7 @@ var (
 	logger *Logger
 )
 
-func New() *Logger {
+func Instance() *Logger {
 	if logger != nil { // more than likely that the other loggers are also initialized
 		return logger
 	}

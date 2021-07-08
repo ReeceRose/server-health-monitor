@@ -16,8 +16,8 @@ type Host struct {
 }
 
 func main() {
-	logger := logger.New()
-	logger.Info("Server Health Monitor - Data Collector Tool")
+	log := logger.Instance()
+	log.Info("Server Health Monitor - Data Collector Tool")
 
 	host := host.GetInformation()
 	// TODO: Read from command line
@@ -30,9 +30,9 @@ func main() {
 		// Collect new data
 
 		// Make request
-		logger.Info("Sending new health data")
+		log.Info("Sending new health data")
 		_, statusCode, _ := client.Post("health", payload)
-		logger.Info(fmt.Sprintf("Sent health data and got a status code of %v\n", statusCode))
+		log.Info(fmt.Sprintf("Sent health data and got a status code of %v\n", statusCode))
 		// Delay for X seconds
 		time.Sleep(time.Second * delay)
 	}

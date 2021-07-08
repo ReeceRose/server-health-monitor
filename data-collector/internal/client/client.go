@@ -7,14 +7,23 @@ import (
 	"time"
 )
 
-type Client struct {
+type Client interface {
+	Get(string) ([]byte, int, error)
+	Post(string, io.Reader) ([]byte, int, error)
+}
+
+type StandardClient struct {
 	baseURL string
 
 	httpClient *http.Client
 }
 
-func NewClient() *Client {
-	return &Client{
+var (
+	_ Client = (*StandardClient)(nil)
+)
+
+func NewClient() *StandardClient {
+	return &StandardClient{
 		baseURL: "https://localhost:3000/api/v1/",
 		httpClient: &http.Client{
 			Timeout: time.Second * 30,
@@ -22,7 +31,7 @@ func NewClient() *Client {
 	}
 }
 
-func (c *Client) makeRequest(method string, url string, body io.Reader) ([]byte, int, error) {
+func (c *StandardClient) makeRequest(method string, url string, body io.Reader) ([]byte, int, error) {
 	request, err := http.NewRequest(method, c.baseURL+url, body)
 	if err != nil {
 		return nil, -100, err
@@ -40,10 +49,10 @@ func (c *Client) makeRequest(method string, url string, body io.Reader) ([]byte,
 	return responseBody, response.StatusCode, nil
 }
 
-func (c *Client) Get(url string) ([]byte, int, error) {
+func (c *StandardClient) Get(url string) ([]byte, int, error) {
 	return c.makeRequest("GET", url, nil)
 }
 
-func (c *Client) Post(endpoint string, data io.Reader) ([]byte, int, error) {
-	return c.makeRequest("POST", endpoint, data)
+func (c *StandardClient) Post(url string, data io.Reader) ([]byte, int, error) {
+	return c.makeRequest("POST", url, data)
 }

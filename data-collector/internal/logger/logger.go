@@ -6,17 +6,24 @@ import (
 	"os"
 )
 
-type Logger struct {
+type Logger interface {
+	Info(string)
+	Warning(string)
+	Error(string)
+}
+
+type StandardLogger struct {
 	infoLogger    *log.Logger
 	warningLogger *log.Logger
 	errorLogger   *log.Logger
 }
 
 var (
-	logger *Logger
+	logger *StandardLogger
+	_      Logger = (*StandardLogger)(nil)
 )
 
-func Instance() *Logger {
+func Instance() *StandardLogger {
 	if logger != nil { // more than likely that the other loggers are also initialized
 		return logger
 	}
@@ -25,7 +32,7 @@ func Instance() *Logger {
 		log.Fatal(err)
 	}
 	mw := io.MultiWriter(os.Stdout, file)
-	logger := Logger{
+	logger := StandardLogger{
 		infoLogger:    log.New(mw, "INFO: ", log.Ldate|log.Ltime),
 		warningLogger: log.New(mw, "WARNING: ", log.Ldate|log.Ltime),
 		errorLogger:   log.New(mw, "ERROR: ", log.Ldate|log.Ltime),
@@ -34,14 +41,14 @@ func Instance() *Logger {
 
 }
 
-func (l *Logger) Info(message string) {
+func (l *StandardLogger) Info(message string) {
 	l.infoLogger.Println(message)
 }
 
-func (l *Logger) Warning(message string) {
+func (l *StandardLogger) Warning(message string) {
 	l.warningLogger.Println(message)
 }
 
-func (l *Logger) Error(message string) {
+func (l *StandardLogger) Error(message string) {
 	l.errorLogger.Println(message)
 }

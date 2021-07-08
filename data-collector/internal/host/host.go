@@ -5,7 +5,7 @@ import (
 	"github.com/shirou/gopsutil/v3/host"
 )
 
-func GetInformation() *host.InfoStat {
+func GetInfo() *host.InfoStat {
 	host, err := host.Info()
 	if err != nil {
 		logger.Instance().Error(err.Error())

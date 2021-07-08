@@ -19,7 +19,7 @@ func main() {
 	log := logger.Instance()
 	log.Info("Server Health Monitor - Data Collector Tool")
 
-	host := host.GetInformation()
+	host := host.GetInfo()
 	// TODO: Read from command line
 	var delay time.Duration = 30 // delay in seconds
 	payload := new(bytes.Buffer)
@@ -32,7 +32,7 @@ func main() {
 		// Make request
 		log.Info("Sending new health data")
 		_, statusCode, _ := client.Post("health", payload)
-		log.Info(fmt.Sprintf("Sent health data and got a status code of %v\n", statusCode))
+		log.Info(fmt.Sprintf("Sent health data and got a status code of %v", statusCode))
 		// Delay for X seconds
 		time.Sleep(time.Second * delay)
 	}

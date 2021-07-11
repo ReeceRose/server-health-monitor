@@ -16,6 +16,7 @@ type StandardLogger struct {
 	infoLogger    *log.Logger
 	warningLogger *log.Logger
 	errorLogger   *log.Logger
+	GenericLogger *log.Logger
 }
 
 var (
@@ -27,7 +28,7 @@ func Instance() *StandardLogger {
 	if logger != nil { // more than likely that the other loggers are also initialized
 		return logger
 	}
-	file, err := os.OpenFile("data-collector.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	file, err := os.OpenFile("server-health-monitor.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -36,6 +37,7 @@ func Instance() *StandardLogger {
 		infoLogger:    log.New(mw, "INFO: ", log.Ldate|log.Ltime),
 		warningLogger: log.New(mw, "WARNING: ", log.Ldate|log.Ltime),
 		errorLogger:   log.New(mw, "ERROR: ", log.Ldate|log.Ltime),
+		GenericLogger: log.New(mw, "", log.Ldate|log.Ltime),
 	}
 	return &logger
 

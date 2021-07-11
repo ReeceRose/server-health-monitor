@@ -1,7 +1,7 @@
 package host
 
 import (
-	"github.com/PR-Developers/server-health-monitor/data-collector/internal/logger"
+	"github.com/PR-Developers/server-health-monitor/internal/logger"
 	"github.com/shirou/gopsutil/v3/host"
 )
 

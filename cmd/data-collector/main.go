@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/PR-Developers/server-health-monitor/data-collector/internal/client"
-	"github.com/PR-Developers/server-health-monitor/data-collector/internal/host"
-	"github.com/PR-Developers/server-health-monitor/data-collector/internal/logger"
+	"github.com/PR-Developers/server-health-monitor/internal/client"
+	"github.com/PR-Developers/server-health-monitor/internal/host"
+	"github.com/PR-Developers/server-health-monitor/internal/logger"
 )
 
 type Host struct {

@@ -7,8 +7,10 @@ import (
 	"time"
 
 	"github.com/PR-Developers/server-health-monitor/internal/client"
+	"github.com/PR-Developers/server-health-monitor/internal/consts"
 	"github.com/PR-Developers/server-health-monitor/internal/host"
 	"github.com/PR-Developers/server-health-monitor/internal/logger"
+	"github.com/PR-Developers/server-health-monitor/internal/utils"
 )
 
 type Host struct {
@@ -24,7 +26,8 @@ func main() {
 	var delay time.Duration = 30 // delay in seconds
 	payload := new(bytes.Buffer)
 	json.NewEncoder(payload).Encode(host)
-	client := client.NewClient()
+	// TODO: pass arguments to GetVariable
+	client := client.NewClient(utils.GetVariable(consts.API_URL, ""))
 
 	for {
 		// Collect new data

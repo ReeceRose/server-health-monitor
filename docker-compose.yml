@@ -6,3 +6,7 @@ services:
     build:
       context: ./
       dockerfile: cmd/api/Dockerfile
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    env_file: .env
+    restart: always

@@ -15,3 +15,5 @@
 vendor/
 
 data-collector.log
+
+.env

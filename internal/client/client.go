@@ -22,9 +22,9 @@ var (
 	_ Client = (*StandardClient)(nil)
 )
 
-func NewClient() *StandardClient {
+func NewClient(baseURL string) *StandardClient {
 	return &StandardClient{
-		baseURL: "https://localhost:3000/api/v1/",
+		baseURL: baseURL,
 		httpClient: &http.Client{
 			Timeout: time.Second * 30,
 		},

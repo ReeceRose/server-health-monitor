@@ -8,7 +8,7 @@ import (
 
 	"github.com/PR-Developers/server-health-monitor/internal/client"
 	"github.com/PR-Developers/server-health-monitor/internal/consts"
-	"github.com/PR-Developers/server-health-monitor/internal/host"
+	"github.com/PR-Developers/server-health-monitor/internal/data-collector/host"
 	"github.com/PR-Developers/server-health-monitor/internal/logger"
 	"github.com/PR-Developers/server-health-monitor/internal/utils"
 )

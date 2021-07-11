@@ -2,14 +2,16 @@ package host
 
 import (
 	"github.com/PR-Developers/server-health-monitor/internal/logger"
+	"github.com/PR-Developers/server-health-monitor/internal/types"
+
 	"github.com/shirou/gopsutil/v3/host"
 )
 
-func GetInfo() *host.InfoStat {
+func GetInfo() *types.Host {
 	host, err := host.Info()
 	if err != nil {
 		logger.Instance().Error(err.Error())
 		return nil
 	}
-	return host
+	return (*types.Host)(host)
 }

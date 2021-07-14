@@ -2,8 +2,8 @@ package server
 
 import (
 	"fmt"
-	"net/http"
 
+	"github.com/PR-Developers/server-health-monitor/internal/api/router"
 	"github.com/PR-Developers/server-health-monitor/internal/consts"
 	"github.com/PR-Developers/server-health-monitor/internal/logger"
 	"github.com/PR-Developers/server-health-monitor/internal/utils"
@@ -30,16 +30,19 @@ func New() *EchoServer {
 	}
 }
 
+// Start the web server
 func (s *EchoServer) Start() {
 	e := s.Instance
-	e.GET("/", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, "Server Health Monitor API")
-	})
 
+	// Currently this server is only used for the core API so the logic below
+	// is fine here. If we need to expand this to be used in multiple locations
+	// the below can be done via first-class functions
 	e.Use(middleware.Recover())
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Output: logger.Instance().GenericLogger.Writer(),
 	}))
+
+	router.Setup(e)
 
 	port := utils.GetVariable(consts.API_PORT, "")
 	port = fmt.Sprintf(":%s", port)

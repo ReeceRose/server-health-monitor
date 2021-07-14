@@ -17,17 +17,15 @@ func NewHealthController() *HealthController {
 	}
 }
 
-// GetAllHealthData returns all health data for a given organization
-func (controller *HealthController) GetAllHealth(c echo.Context) error {
-	return c.JSON(http.StatusOK, controller.service.GetHealth())
-}
+// NOTE: Currently Agent-UUID is currently being used for both orginization and agent ids.
+// Eventually this value will be pulled from the auth. token.
 
 // GetHealthByServerId returns all health data for a given organizations server
-func (controller *HealthController) GetHealthByServerId(c echo.Context) error {
-	return c.JSON(http.StatusOK, controller.service.GetHealthByServerId())
+func (controller *HealthController) GetHealth(c echo.Context) error {
+	return c.JSON(http.StatusOK, controller.service.GetHealth(c.Request().Header.Get("Agent-UUID")))
 }
 
 // AddHealth adds health data for a given organizations server
 func (controller *HealthController) PostHealth(c echo.Context) error {
-	return c.JSON(http.StatusOK, controller.service.AddHealth())
+	return c.JSON(http.StatusOK, controller.service.AddHealth(c.Request().Header.Get("Agent-UUID")))
 }

@@ -26,7 +26,7 @@ func getDefaultForKey(key string) string {
 	case consts.API_PORT:
 		return "3000"
 	case consts.API_URL:
-		return "https://localhost:3000/api/v1/"
+		return "http://localhost:3000/api/v1/"
 	}
 	return ""
 }

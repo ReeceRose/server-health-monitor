@@ -7,9 +7,18 @@ import (
 )
 
 // GetVariable returns a value given a key.
-// The order in which GetVariable tries to read and pull values from is:
-// arguments (from CLI), environemnt variables, and finally default values
-func GetVariable(key string, args string) string {
+// GetVariable first tries to read from environment variables and will default
+// to preset values
+
+func GetVariable(key string) string {
+	return GetVariableWithArgs(key, "")
+}
+
+// GetVariableWithArgs returns a value given a key.
+// GetVariableWithArgs first tries to read from command line arguments,
+// environment variables, and will default to preset values
+
+func GetVariableWithArgs(key string, args string) string {
 	// TODO: read from arguments
 	if args != "" {
 
@@ -26,7 +35,13 @@ func getDefaultForKey(key string) string {
 	case consts.API_PORT:
 		return "3000"
 	case consts.API_URL:
-		return "http://localhost:3000/api/v1/"
+		return "https://localhost:3000/api/v1/"
+	case consts.CERT_DIR:
+		return "/certs"
+	case consts.API_CERT:
+		return "localhost.crt"
+	case consts.API_KEY:
+		return "localhost.key"
 	}
 	return ""
 }

@@ -21,3 +21,6 @@ server-health-monitor.log
 cmd/api/api
 cmd/data-collector/data-collector
 config.json
+
+*.crt
+*.key

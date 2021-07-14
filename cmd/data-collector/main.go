@@ -22,7 +22,7 @@ func main() {
 	log.Info("Server Health Monitor - Data Collector Tool")
 
 	// TODO: pass arguments to GetVariable
-	client, err := client.NewClient(utils.GetVariable(consts.API_URL, ""))
+	client, err := client.NewClient(utils.GetVariable(consts.API_URL))
 	if err != nil {
 		panic(err)
 	}

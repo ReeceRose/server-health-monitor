@@ -1,5 +1,7 @@
 package types
 
+import "github.com/google/uuid"
+
 type Host struct {
 	Hostname             string `json:"hostname"`
 	Uptime               uint64 `json:"uptime"`
@@ -14,4 +16,8 @@ type Host struct {
 	VirtualizationSystem string `json:"virtualizationSystem"`
 	VirtualizationRole   string `json:"virtualizationRole"`
 	HostID               string `json:"hostId"`
+}
+
+type AgentInformation struct {
+	UUID uuid.UUID
 }

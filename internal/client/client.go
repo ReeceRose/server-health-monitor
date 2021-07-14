@@ -5,6 +5,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/PR-Developers/server-health-monitor/internal/data-collector/store"
+	"github.com/PR-Developers/server-health-monitor/internal/types"
 )
 
 type Client interface {
@@ -13,26 +16,30 @@ type Client interface {
 }
 
 type StandardClient struct {
-	baseURL string
-
-	httpClient *http.Client
+	baseURL          string
+	httpClient       *http.Client
+	agentInformation types.AgentInformation
 }
 
 var (
 	_ Client = (*StandardClient)(nil)
 )
 
-func NewClient(baseURL string) *StandardClient {
+func NewClient(baseURL string) (*StandardClient, error) {
+	store := store.StoreInstance()
+
 	return &StandardClient{
 		baseURL: baseURL,
 		httpClient: &http.Client{
 			Timeout: time.Second * 30,
 		},
-	}
+		agentInformation: store.GetAgentInformation(),
+	}, nil
 }
 
 func (c *StandardClient) makeRequest(method string, url string, body io.Reader) ([]byte, int, error) {
 	request, err := http.NewRequest(method, c.baseURL+url, body)
+	request.Header.Add("Agent-UUID", c.agentInformation.UUID.String())
 	if err != nil {
 		return nil, -100, err
 	}

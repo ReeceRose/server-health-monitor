@@ -21,13 +21,17 @@ func main() {
 	log := logger.Instance()
 	log.Info("Server Health Monitor - Data Collector Tool")
 
+	// TODO: pass arguments to GetVariable
+	client, err := client.NewClient(utils.GetVariable(consts.API_URL, ""))
+	if err != nil {
+		panic(err)
+	}
+
 	host := host.GetInfo()
 	// TODO: Read from command line
 	var delay time.Duration = 30 // delay in seconds
 	payload := new(bytes.Buffer)
 	json.NewEncoder(payload).Encode(host)
-	// TODO: pass arguments to GetVariable
-	client := client.NewClient(utils.GetVariable(consts.API_URL, ""))
 
 	for {
 		// Collect new data

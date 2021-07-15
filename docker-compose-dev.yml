@@ -2,8 +2,10 @@ version: "3.5"
 
 services:
   api:
-    image: server-health-monitor_api
     container_name: api
+    build:
+      context: ./
+      dockerfile: cmd/api/Dockerfile
     ports:
       - "${API_PORT}:${API_PORT}"
     env_file: .env

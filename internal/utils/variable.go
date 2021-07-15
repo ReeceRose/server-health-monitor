@@ -42,6 +42,8 @@ func getDefaultForKey(key string) string {
 		return "localhost.crt"
 	case consts.API_KEY:
 		return "localhost.key"
+	case consts.DB_URI:
+		return "mongodb://localhost:27017"
 	}
 	return ""
 }

@@ -17,7 +17,7 @@ func main() {
 		panic(err)
 	}
 
-	defer database.Client.Disconnect(database.Context)
+	defer database.Disconnect()
 
 	server.Start()
 }

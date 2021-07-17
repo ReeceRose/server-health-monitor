@@ -16,14 +16,19 @@ type Store interface {
 }
 
 var (
-	_ Store = (*FileStore)(nil)
+	_         Store = (*FileStore)(nil)
+	fileStore *FileStore
 )
 
 type FileStore struct {
 }
 
-func StoreInstance() *FileStore {
-	return &FileStore{}
+func FileStoreInstance() *FileStore {
+	if fileStore != nil {
+		return fileStore
+	}
+	fileStore = &FileStore{}
+	return fileStore
 }
 
 // Get reads a JSON file and returns the data
@@ -63,9 +68,9 @@ func (s *FileStore) GetAgentInformation() types.AgentInformation {
 
 	var agentInformation types.AgentInformation
 	json.Unmarshal(agentData, &agentInformation)
-	if agentInformation.UUID.String() == "" {
+	if agentInformation.ID.String() == "" {
 		agentInformation = types.AgentInformation{}
-		agentInformation.UUID = uuid.New()
+		agentInformation.ID = uuid.New()
 		data, _ := json.Marshal(agentInformation)
 		s.Store(data)
 	}

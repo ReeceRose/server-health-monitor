@@ -11,27 +11,19 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type HealthRepository interface {
-	Find(query interface{}) ([]types.Health, error)
-	// FindOne(where ...interface{}) (types.Health, error)
-	// Insert(value interface{}) ([]types.Health, error)
-	// Update(value interface{}) ([]types.Health, error)
-	// Delete(value interface{}) (types.Health, error)
-}
-
-type healthRepository struct {
+type HealthRepository struct {
 	*baseRepository
 	collection     *mongo.Collection
 	collectionName string // collection.Name() is an alternative but this is a static name so no need to query it
 }
 
 var (
-	_ HealthRepository = (*healthRepository)(nil)
+	_ healthRepository = (*HealthRepository)(nil)
 )
 
-func NewHealthRepository() *healthRepository {
+func NewHealthRepository() *HealthRepository {
 	db, _ := database.Instance()
-	return &healthRepository{
+	return &HealthRepository{
 		baseRepository: &baseRepository{
 			db: db,
 		},
@@ -40,7 +32,7 @@ func NewHealthRepository() *healthRepository {
 	}
 }
 
-func (r *healthRepository) Find(query interface{}) ([]types.Health, error) {
+func (r *HealthRepository) Find(query interface{}) ([]types.Health, error) {
 	log := logger.Instance()
 	cursor, err := r.collection.Find(r.db.Context, query)
 	if err != nil {

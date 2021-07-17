@@ -38,7 +38,6 @@ func (s *EchoServer) Start() {
 	// is fine here. If we need to expand this to be used in multiple locations
 	// the below can be done via first-class functions
 	e.Pre(middleware.HTTPSRedirect())
-	e.Pre(middleware.AddTrailingSlash())
 
 	e.Use(middleware.Recover())
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{

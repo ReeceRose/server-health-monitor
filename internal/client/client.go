@@ -1,13 +1,17 @@
 package client
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"time"
 
+	"github.com/PR-Developers/server-health-monitor/internal/consts"
 	"github.com/PR-Developers/server-health-monitor/internal/data-collector/store"
 	"github.com/PR-Developers/server-health-monitor/internal/types"
+	"github.com/PR-Developers/server-health-monitor/internal/utils"
 )
 
 type Client interface {
@@ -26,12 +30,24 @@ var (
 )
 
 func NewClient(baseURL string) (*StandardClient, error) {
-	store := store.StoreInstance()
+	store := store.FileStoreInstance()
+	certDir := utils.GetVariable(consts.CERT_DIR)
+	caCert, err := ioutil.ReadFile(certDir + "/" + utils.GetVariable(consts.API_CERT))
+	if err != nil {
+		panic(err)
+	}
+	caCertPool := x509.NewCertPool()
+	caCertPool.AppendCertsFromPEM(caCert)
 
 	return &StandardClient{
 		baseURL: baseURL,
 		httpClient: &http.Client{
 			Timeout: time.Second * 30,
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					RootCAs: caCertPool,
+				},
+			},
 		},
 		agentInformation: store.GetAgentInformation(),
 	}, nil
@@ -39,7 +55,7 @@ func NewClient(baseURL string) (*StandardClient, error) {
 
 func (c *StandardClient) makeRequest(method string, url string, body io.Reader) ([]byte, int, error) {
 	request, err := http.NewRequest(method, c.baseURL+url, body)
-	request.Header.Add("Agent-UUID", c.agentInformation.UUID.String())
+	request.Header.Add("Agent-ID", c.agentInformation.ID.String())
 	if err != nil {
 		return nil, -100, err
 	}
@@ -51,7 +67,7 @@ func (c *StandardClient) makeRequest(method string, url string, body io.Reader) 
 	defer response.Body.Close()
 	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return nil, 0, err
+		return nil, -102, err
 	}
 	return responseBody, response.StatusCode, nil
 }

@@ -2,7 +2,6 @@ package database
 
 import (
 	"context"
-	"time"
 
 	"github.com/PR-Developers/server-health-monitor/internal/consts"
 	"github.com/PR-Developers/server-health-monitor/internal/utils"
@@ -15,9 +14,8 @@ type Database interface {
 }
 
 type MongoDB struct {
-	Client     *mongo.Client
-	Context    context.Context
-	cancelFunc context.CancelFunc
+	Client  *mongo.Client
+	Context context.Context
 }
 
 var (
@@ -30,27 +28,23 @@ func Instance() (*MongoDB, error) {
 		return database, nil
 	}
 
-	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Second*15)
 	clientOptions := options.Client().ApplyURI(utils.GetVariable(consts.DB_URI)).SetAuth(options.Credential{
 		Username: utils.GetVariable(consts.DB_USER),
 		Password: utils.GetVariable(consts.DB_PASS),
 	})
 
-	client, err := mongo.Connect(ctx, clientOptions)
+	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
-		cancelFunc()
 		return nil, err
 	}
 
 	database = &MongoDB{
-		Client:     client,
-		Context:    ctx,
-		cancelFunc: cancelFunc,
+		Client:  client,
+		Context: context.Background(),
 	}
 	return database, nil
 }
 
 func (db *MongoDB) Disconnect() error {
-	db.cancelFunc()
 	return database.Client.Disconnect(db.Context)
 }

@@ -68,7 +68,7 @@ func (s *FileStore) GetAgentInformation() types.AgentInformation {
 
 	var agentInformation types.AgentInformation
 	json.Unmarshal(agentData, &agentInformation)
-	if agentInformation.ID.String() == "" {
+	if agentInformation.ID.String() == "00000000-0000-0000-0000-000000000000" {
 		agentInformation = types.AgentInformation{}
 		agentInformation.ID = uuid.New()
 		data, _ := json.Marshal(agentInformation)

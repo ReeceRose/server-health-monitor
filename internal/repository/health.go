@@ -15,6 +15,7 @@ type HealthRepository struct {
 	*baseRepository
 	collection     *mongo.Collection
 	collectionName string // collection.Name() is an alternative but this is a static name so no need to query it
+	log            logger.Logger
 }
 
 var (
@@ -29,15 +30,15 @@ func NewHealthRepository() *HealthRepository {
 		},
 		collection:     db.Client.Database(utils.GetVariable(consts.DB_NAME)).Collection(consts.COLLECTION_HEALTH),
 		collectionName: consts.COLLECTION_HEALTH,
+		log:            logger.Instance(),
 	}
 }
 
 func (r *HealthRepository) Find(query interface{}) ([]types.Health, error) {
-	log := logger.Instance()
 	cursor, err := r.collection.Find(r.db.Context, query)
 	if err != nil {
 		msg := fmt.Sprintf("failed to read data from collection: %s with query: %s (%s)", r.collectionName, query, err.Error())
-		log.Error(msg)
+		r.log.Error(msg)
 		return nil, fmt.Errorf(msg)
 	}
 
@@ -46,10 +47,20 @@ func (r *HealthRepository) Find(query interface{}) ([]types.Health, error) {
 	for cursor.Next(r.db.Context) {
 		var record types.Health
 		if err = cursor.Decode(&record); err != nil {
-			log.Warning(fmt.Sprintf("failed to read record on %s with query: %s", r.collectionName, query))
+			r.log.Warning(fmt.Sprintf("failed to read record on %s with query: %s", r.collectionName, query))
 		}
 		data = append(data, record)
 	}
 
 	return data, nil
+}
+
+func (r *HealthRepository) Insert(data *types.Health) (string, error) {
+	res, err := r.collection.InsertOne(r.db.Context, data)
+	if err != nil {
+		msg := fmt.Sprintf("failed to insert data into collection: %s with data: %x", r.collectionName, data)
+		r.log.Error(msg)
+		return "", fmt.Errorf(msg)
+	}
+	return fmt.Sprintf("%x", res.InsertedID), nil
 }

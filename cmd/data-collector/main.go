@@ -34,13 +34,13 @@ func main() {
 	// TODO: Read from command line
 	var delay time.Duration = 30 // delay in seconds
 	payload := new(bytes.Buffer)
-	json.NewEncoder(payload).Encode(health)
 
 	for {
 		// Collect new data
 
 		// Make request
 		log.Info("Sending new health data")
+		json.NewEncoder(payload).Encode(health)
 		_, statusCode, _ := client.Post("health/", payload)
 		log.Info(fmt.Sprintf("Sent health data and got a status code of %v", statusCode))
 		// Delay for X seconds

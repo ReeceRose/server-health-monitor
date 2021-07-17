@@ -8,6 +8,7 @@ import (
 	"github.com/PR-Developers/server-health-monitor/internal/repository"
 	"github.com/PR-Developers/server-health-monitor/internal/types"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type HealthService struct {
@@ -44,10 +45,27 @@ func (s *HealthService) GetHealth(agentID string) types.StandardResponse {
 	}
 }
 
-func (s *HealthService) AddHealth(agentID string, health types.Health) types.StandardResponse {
-	// TODO: add halth data
+func (s *HealthService) AddHealth(agentID string, data *types.Health) types.StandardResponse {
+	s.log.Info("attemping to insert health data for agent: " + agentID)
+
+	data.AgentID = agentID
+	data.ID = primitive.NewObjectID()
+
+	_, err := s.healthRepository.Insert(data)
+
+	if err != nil {
+		return types.StandardResponse{
+			Error:      fmt.Sprintf("failed to insert data for server ID: %s", agentID),
+			StatusCode: http.StatusInternalServerError,
+			Data:       nil,
+			Success:    false,
+		}
+	}
+
+	s.log.Info("successfully inserted health data for agent: " + agentID)
+
 	return types.StandardResponse{
-		Data:       nil,
+		Data:       data,
 		StatusCode: http.StatusOK,
 		Success:    true,
 	}

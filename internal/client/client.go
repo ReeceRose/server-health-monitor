@@ -32,7 +32,7 @@ var (
 func NewClient(baseURL string) (*StandardClient, error) {
 	store := store.FileStoreInstance()
 	certDir := utils.GetVariable(consts.CERT_DIR)
-	caCert, err := ioutil.ReadFile(certDir + "/" + utils.GetVariable(consts.API_CERT))
+	caCert, err := ioutil.ReadFile(certDir + "/" + utils.GetVariable(consts.CLIENT_CERT))
 	if err != nil {
 		panic(err)
 	}
@@ -55,20 +55,24 @@ func NewClient(baseURL string) (*StandardClient, error) {
 
 func (c *StandardClient) makeRequest(method string, url string, body io.Reader) ([]byte, int, error) {
 	request, err := http.NewRequest(method, c.baseURL+url, body)
-	request.Header.Add("Agent-ID", c.agentInformation.ID.String())
 	if err != nil {
 		return nil, -100, err
 	}
+
+	request.Header.Add("Agent-ID", c.agentInformation.ID.String())
 	request.Header.Set("Content-Type", "application/json")
+
 	response, err := c.httpClient.Do(request)
 	if err != nil {
 		return nil, -101, err
 	}
+
 	defer response.Body.Close()
 	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return nil, -102, err
 	}
+
 	return responseBody, response.StatusCode, nil
 }
 

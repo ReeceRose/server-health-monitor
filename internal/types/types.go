@@ -2,6 +2,7 @@ package types
 
 import (
 	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type StandardResponse struct {
@@ -15,8 +16,9 @@ type Health struct {
 	// TODO: decide if host should be apart of 'health' or just apart of 'host'
 	// (host information should mostly stay the same, and maybe we'll just send it at startup,
 	// we can either re-send non-static items like uptime or maybe calculate that based off of boottime?)
-	Host    Host   `json:"host" bson:"host"`
-	AgentID string `json:"agentID" bson:"agentID"`
+	ID      primitive.ObjectID `json:"_id" bson:"_id"`
+	Host    Host               `json:"host" bson:"host"`
+	AgentID string             `json:"agentID" bson:"agentID"` // NOTE: Host.HostID is an alternative solution to AgentID
 }
 
 type Host struct {

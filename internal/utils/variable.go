@@ -38,6 +38,8 @@ func getDefaultForKey(key string) string {
 		return "https://localhost:3000/api/v1/"
 	case consts.CERT_DIR:
 		return "/certs"
+	case consts.CLIENT_CERT:
+		return "localhost.crt"
 	case consts.API_CERT:
 		return "localhost.crt"
 	case consts.API_KEY:

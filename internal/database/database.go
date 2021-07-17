@@ -11,19 +11,21 @@ import (
 )
 
 type Database interface {
+	Disconnect() error
 }
 
 type MongoDB struct {
-	client     *mongo.Client
-	context    context.Context
+	Client     *mongo.Client
+	Context    context.Context
 	cancelFunc context.CancelFunc
 }
 
 var (
 	database *MongoDB
+	_        Database = (*MongoDB)(nil)
 )
 
-func Initialize() (*MongoDB, error) {
+func Instance() (*MongoDB, error) {
 	if database != nil {
 		return database, nil
 	}
@@ -41,8 +43,8 @@ func Initialize() (*MongoDB, error) {
 	}
 
 	database = &MongoDB{
-		client:     client,
-		context:    ctx,
+		Client:     client,
+		Context:    ctx,
 		cancelFunc: cancelFunc,
 	}
 	return database, nil
@@ -50,5 +52,5 @@ func Initialize() (*MongoDB, error) {
 
 func (db *MongoDB) Disconnect() error {
 	db.cancelFunc()
-	return database.client.Disconnect(db.context)
+	return database.Client.Disconnect(db.Context)
 }

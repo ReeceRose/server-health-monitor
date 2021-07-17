@@ -2,6 +2,10 @@ package types
 
 import "github.com/google/uuid"
 
+type Health struct {
+	Host Host `json:"host" bson:"host"`
+}
+
 type Host struct {
 	Hostname             string `json:"hostname"`
 	Uptime               uint64 `json:"uptime"`

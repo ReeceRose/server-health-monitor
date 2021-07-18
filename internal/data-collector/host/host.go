@@ -3,16 +3,19 @@ package host
 import (
 	"github.com/PR-Developers/server-health-monitor/internal/logger"
 	"github.com/PR-Developers/server-health-monitor/internal/types"
+	"github.com/PR-Developers/server-health-monitor/internal/wrapper"
+)
 
-	"github.com/shirou/gopsutil/v3/host"
+var (
+	hostWrapper types.HostInformation = &wrapper.GopsHost{}
 )
 
 // GetInfo returns all host information
 func GetInfo() *types.Host {
-	host, err := host.Info()
+	host, err := hostWrapper.Info()
 	if err != nil {
 		logger.Instance().Error(err.Error())
 		return nil
 	}
-	return (*types.Host)(host)
+	return host
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/PR-Developers/server-health-monitor/internal/consts"
 	"github.com/PR-Developers/server-health-monitor/internal/types"
+	"github.com/PR-Developers/server-health-monitor/internal/wrapper"
 	"github.com/google/uuid"
 )
 
@@ -18,6 +19,7 @@ type Store interface {
 var (
 	_         Store = (*FileStore)(nil)
 	fileStore *FileStore
+	osWrapper types.OperatingSystem = &wrapper.DefaultOS{}
 )
 
 type FileStore struct {
@@ -25,6 +27,8 @@ type FileStore struct {
 
 // Instance returns the active instance of the file store
 func Instance() *FileStore {
+	createFileIfNotExists(consts.AGENT_STORE_FILENAME)
+
 	if fileStore != nil {
 		return fileStore
 	}
@@ -34,25 +38,18 @@ func Instance() *FileStore {
 
 // Get reads a JSON file and returns the data
 func (s *FileStore) Get() ([]byte, error) {
-	s.createFileIfNotExists(consts.AGENT_STORE_FILENAME)
-	file, err := os.ReadFile(consts.AGENT_STORE_FILENAME)
-	if err != nil {
-		return nil, err
-	}
-
-	return file, nil
+	return osWrapper.ReadFile(consts.AGENT_STORE_FILENAME)
 }
 
 // Store writes the desired JSON to a JSON file
 func (s *FileStore) Store(data []byte) error {
-	s.createFileIfNotExists(consts.AGENT_STORE_FILENAME)
-	return os.WriteFile(consts.AGENT_STORE_FILENAME, data, 0644)
+	return osWrapper.WriteFile(consts.AGENT_STORE_FILENAME, data, 0644)
 }
 
 // createFileIfNotExists is a handy method which creates a given file if it does not exist
-func (s *FileStore) createFileIfNotExists(fileName string) error {
-	if _, err := os.Stat(fileName); os.IsNotExist(err) {
-		file, err := os.OpenFile(fileName, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+func createFileIfNotExists(fileName string) error {
+	if _, err := osWrapper.Stat(fileName); osWrapper.IsNotExist(err) {
+		file, err := osWrapper.OpenFile(fileName, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 		if err != nil {
 			return err
 		}

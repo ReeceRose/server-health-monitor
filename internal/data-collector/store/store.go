@@ -23,7 +23,8 @@ var (
 type FileStore struct {
 }
 
-func FileStoreInstance() *FileStore {
+// Instance returns the active instance of the file store
+func Instance() *FileStore {
 	if fileStore != nil {
 		return fileStore
 	}
@@ -33,7 +34,7 @@ func FileStoreInstance() *FileStore {
 
 // Get reads a JSON file and returns the data
 func (s *FileStore) Get() ([]byte, error) {
-	s.createFileIfNotExists()
+	s.createFileIfNotExists(consts.AGENT_STORE_FILENAME)
 	file, err := os.ReadFile(consts.AGENT_STORE_FILENAME)
 	if err != nil {
 		return nil, err
@@ -44,13 +45,14 @@ func (s *FileStore) Get() ([]byte, error) {
 
 // Store writes the desired JSON to a JSON file
 func (s *FileStore) Store(data []byte) error {
-	s.createFileIfNotExists()
+	s.createFileIfNotExists(consts.AGENT_STORE_FILENAME)
 	return os.WriteFile(consts.AGENT_STORE_FILENAME, data, 0644)
 }
 
-func (s *FileStore) createFileIfNotExists() error {
-	if _, err := os.Stat(consts.AGENT_STORE_FILENAME); os.IsNotExist(err) {
-		file, err := os.OpenFile(consts.AGENT_STORE_FILENAME, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+// createFileIfNotExists is a handy method which creates a given file if it does not exist
+func (s *FileStore) createFileIfNotExists(fileName string) error {
+	if _, err := os.Stat(fileName); os.IsNotExist(err) {
+		file, err := os.OpenFile(fileName, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 		if err != nil {
 			return err
 		}

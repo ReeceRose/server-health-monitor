@@ -22,6 +22,7 @@ var (
 	_ healthRepository = (*HealthRepository)(nil)
 )
 
+// NewHealthRepository returns an instanced health repository
 func NewHealthRepository() *HealthRepository {
 	db, _ := database.Instance()
 	return &HealthRepository{
@@ -34,6 +35,7 @@ func NewHealthRepository() *HealthRepository {
 	}
 }
 
+// Find all health data given a certain query
 func (r *HealthRepository) Find(query interface{}) ([]types.Health, error) {
 	cursor, err := r.collection.Find(r.db.Context, query)
 	if err != nil {
@@ -55,6 +57,7 @@ func (r *HealthRepository) Find(query interface{}) ([]types.Health, error) {
 	return data, nil
 }
 
+// Insert a single record into the database
 func (r *HealthRepository) Insert(data *types.Health) (string, error) {
 	res, err := r.collection.InsertOne(r.db.Context, data)
 	if err != nil {

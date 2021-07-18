@@ -9,7 +9,6 @@ import (
 // GetVariable returns a value given a key.
 // GetVariable first tries to read from environment variables and will default
 // to preset values
-
 func GetVariable(key string) string {
 	return GetVariableWithArgs(key, "")
 }
@@ -17,7 +16,6 @@ func GetVariable(key string) string {
 // GetVariableWithArgs returns a value given a key.
 // GetVariableWithArgs first tries to read from command line arguments,
 // environment variables, and will default to preset values
-
 func GetVariableWithArgs(key string, args string) string {
 	// TODO: read from arguments
 	if args != "" {
@@ -30,6 +28,8 @@ func GetVariableWithArgs(key string, args string) string {
 	return getDefaultForKey(key)
 }
 
+// getDefaultForKey is a handy method to get the default values if
+// not present in arguments or environment variables
 func getDefaultForKey(key string) string {
 	switch key {
 	case consts.API_PORT:

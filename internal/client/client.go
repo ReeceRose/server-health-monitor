@@ -29,8 +29,9 @@ var (
 	_ Client = (*StandardClient)(nil)
 )
 
+// NewClient returns an instanced HTTP client
 func NewClient(baseURL string) (*StandardClient, error) {
-	store := store.FileStoreInstance()
+	store := store.Instance()
 	certDir := utils.GetVariable(consts.CERT_DIR)
 	caCert, err := ioutil.ReadFile(certDir + "/" + utils.GetVariable(consts.CLIENT_CERT))
 	if err != nil {
@@ -53,6 +54,7 @@ func NewClient(baseURL string) (*StandardClient, error) {
 	}, nil
 }
 
+// makeRequest will make any HTTP request and also sends common data required for each request
 func (c *StandardClient) makeRequest(method string, url string, body io.Reader) ([]byte, int, error) {
 	request, err := http.NewRequest(method, c.baseURL+url, body)
 	if err != nil {
@@ -76,10 +78,12 @@ func (c *StandardClient) makeRequest(method string, url string, body io.Reader) 
 	return responseBody, response.StatusCode, nil
 }
 
+// Get makes a GET request to a given URL
 func (c *StandardClient) Get(url string) ([]byte, int, error) {
 	return c.makeRequest("GET", url, nil)
 }
 
+// Post makes a POST request to a givn URL
 func (c *StandardClient) Post(url string, data io.Reader) ([]byte, int, error) {
 	return c.makeRequest("POST", url, data)
 }

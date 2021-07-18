@@ -24,8 +24,9 @@ var (
 	_      Logger = (*StandardLogger)(nil)
 )
 
+// Instance returns the active instance of the logger
 func Instance() *StandardLogger {
-	if logger != nil { // more than likely that the other loggers are also initialized
+	if logger != nil {
 		return logger
 	}
 	file, err := os.OpenFile("server-health-monitor.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
@@ -43,14 +44,17 @@ func Instance() *StandardLogger {
 
 }
 
+// Info should be used to log generic log messages
 func (l *StandardLogger) Info(message string) {
 	l.infoLogger.Println(message)
 }
 
+// Warning should be used to log events of concern
 func (l *StandardLogger) Warning(message string) {
 	l.warningLogger.Println(message)
 }
 
+// Error should be used to log unexpected behaviour
 func (l *StandardLogger) Error(message string) {
 	l.errorLogger.Println(message)
 }

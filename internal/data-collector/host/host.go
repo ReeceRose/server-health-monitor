@@ -7,6 +7,7 @@ import (
 	"github.com/shirou/gopsutil/v3/host"
 )
 
+// GetInfo returns all host information
 func GetInfo() *types.Host {
 	host, err := host.Info()
 	if err != nil {

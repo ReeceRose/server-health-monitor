@@ -16,6 +16,7 @@ type HealthService struct {
 	log              logger.Logger
 }
 
+// NewHealthService returns an instanced health service
 func NewHealthService() *HealthService {
 	return &HealthService{
 		healthRepository: repository.NewHealthRepository(),
@@ -23,6 +24,7 @@ func NewHealthService() *HealthService {
 	}
 }
 
+// GetHealth returns all health data for a given agent
 func (s *HealthService) GetHealth(agentID string) types.StandardResponse {
 	s.log.Info("attemping to get health data for agent: " + agentID)
 
@@ -45,6 +47,7 @@ func (s *HealthService) GetHealth(agentID string) types.StandardResponse {
 	}
 }
 
+// AddHealth inserts new health data for a given agent
 func (s *HealthService) AddHealth(agentID string, data *types.Health) types.StandardResponse {
 	s.log.Info("attemping to insert health data for agent: " + agentID)
 

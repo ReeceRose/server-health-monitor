@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// Setup handles all the public/private server routes
 func Setup(e *echo.Echo) {
 	// General setup
 	health := controller.NewHealthController()

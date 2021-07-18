@@ -23,6 +23,7 @@ var (
 	_        Database = (*MongoDB)(nil)
 )
 
+// Instance returns the active instance of the database
 func Instance() (*MongoDB, error) {
 	if database != nil {
 		return database, nil
@@ -45,6 +46,7 @@ func Instance() (*MongoDB, error) {
 	return database, nil
 }
 
+// Disconnect is used to disconnect the database at the end of a session
 func (db *MongoDB) Disconnect() error {
 	return database.Client.Disconnect(db.Context)
 }

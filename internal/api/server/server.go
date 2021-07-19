@@ -39,6 +39,7 @@ func (s *EchoServer) Start() {
 	// the below can be done via first-class functions
 	e.Pre(middleware.HTTPSRedirect())
 
+	e.Use(middleware.RequestID())
 	e.Use(middleware.Recover())
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Output: logger.Instance().GenericLogger.Writer(),

@@ -16,6 +16,7 @@ func Setup(e *echo.Echo) {
 	// TODO: setup auth middleware
 
 	// Private routes
-	e.GET("/api/v1/health/:agent-id", func(c echo.Context) error { return health.GetHealthByServerId(c) })
+	e.GET("/api/v1/health/", func(c echo.Context) error { return health.GetHealth(c) })
+	e.GET("/api/v1/health/:agent-id", func(c echo.Context) error { return health.GetHealthByAgentId(c) })
 	e.POST("/api/v1/health/", func(c echo.Context) error { return health.PostHealth(c) })
 }

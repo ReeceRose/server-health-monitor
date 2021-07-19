@@ -19,15 +19,26 @@ func NewHealthController() *HealthController {
 // NOTE: Currently Agent-ID is currently being used for both orginization and agent ids.
 // Eventually this value (ie, orginization id) will be pulled from the auth. token.
 
-// GetHealthByServerId returns all health data for a given organizations server
-func (controller *HealthController) GetHealthByServerId(c echo.Context) error {
-	res := controller.service.GetHealth(c.Param("agent-id"))
+// GetHealth returns all health data
+func (controller *HealthController) GetHealth(c echo.Context) error {
+	res := controller.service.GetHealth(
+		c.Response().Header().Get("X-Request-ID"),
+	)
 	return c.JSON(res.StatusCode, res)
 }
 
-// AddHealth adds health data for a given organizations server
+// GetHealthByAgentId returns all health data for an agent
+func (controller *HealthController) GetHealthByAgentId(c echo.Context) error {
+	res := controller.service.GetHealthByAgentID(
+		c.Response().Header().Get("X-Request-ID"), c.Param("agent-id"),
+	)
+	return c.JSON(res.StatusCode, res)
+}
+
+// AddHealth adds health data for an agent
 func (controller *HealthController) PostHealth(c echo.Context) error {
 	health := new(types.Health)
+
 	if err := c.Bind(health); err != nil {
 		return c.JSON(400, types.StandardResponse{
 			StatusCode: 400,
@@ -37,6 +48,9 @@ func (controller *HealthController) PostHealth(c echo.Context) error {
 		})
 	}
 
-	res := controller.service.AddHealth(c.Request().Header.Get("Agent-ID"), health)
+	res := controller.service.AddHealth(
+		c.Response().Header().Get("X-Request-ID"),
+		c.Request().Header.Get("Agent-ID"), health,
+	)
 	return c.JSON(res.StatusCode, res)
 }

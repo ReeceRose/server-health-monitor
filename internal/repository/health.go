@@ -61,7 +61,7 @@ func (r *HealthRepository) Find(query interface{}) ([]types.Health, error) {
 func (r *HealthRepository) Insert(data *types.Health) (string, error) {
 	res, err := r.collection.InsertOne(r.db.Context, data)
 	if err != nil {
-		msg := fmt.Sprintf("failed to insert data into collection: %s with data: %x", r.collectionName, data)
+		msg := fmt.Sprintf("failed to insert data into collection: %s", r.collectionName)
 		r.log.Error(msg)
 		return "", fmt.Errorf(msg)
 	}

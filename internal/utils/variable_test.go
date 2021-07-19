@@ -45,7 +45,7 @@ func TestGetVariableDefaultsValue(t *testing.T) {
 	os.Clearenv()
 	assert.Equal(t, "3000", GetVariable(consts.API_PORT))
 	assert.Equal(t, "https://localhost:3000/api/v1/", GetVariable(consts.API_URL))
-	assert.Equal(t, "/certs", GetVariable(consts.CERT_DIR))
+	assert.Equal(t, "certs", GetVariable(consts.CERT_DIR))
 	assert.Equal(t, "localhost.crt", GetVariable(consts.CLIENT_CERT))
 	assert.Equal(t, "localhost.crt", GetVariable(consts.API_CERT))
 	assert.Equal(t, "localhost.key", GetVariable(consts.API_KEY))

@@ -20,7 +20,9 @@ jobs:
         run: |
           go generate -v ./...
           go test ./... -v -coverprofile=coverage.out
+
       - name: Vet
         run: go vet ./...
+
       - name: Build
         run: go build -v ./...

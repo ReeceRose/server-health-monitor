@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	hostWrapper types.HostInformation = &wrapper.GopsHost{}
+	hostWrapper wrapper.HostInformation = &wrapper.GopsHost{}
 )
 
 // GetInfo returns all host information

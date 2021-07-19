@@ -1,9 +1,6 @@
 package types
 
 import (
-	"io/fs"
-	"os"
-
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -44,17 +41,4 @@ type Host struct {
 
 type AgentInformation struct {
 	ID uuid.UUID
-}
-
-type OperatingSystem interface {
-	OpenFile(string, int, fs.FileMode) (*os.File, error)
-	ReadFile(string) ([]byte, error)
-	WriteFile(string, []byte, os.FileMode) error
-	IsNotExist(error) bool
-	Stat(string) (os.FileInfo, error)
-	Remove(string) error
-}
-
-type HostInformation interface {
-	Info() (*Host, error)
 }

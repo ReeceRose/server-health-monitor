@@ -19,17 +19,16 @@ import (
 
 func resetStore() {
 	fileStore = nil
-	osWrapper = &wrapper.DefaultOS{}
 }
 
 func TestStoreInstanceInitializesStore(t *testing.T) {
 	resetStore()
 
 	assert.Nil(t, fileStore)
-	store := Instance()
+	store := Instance(&wrapper.DefaultOS{})
 	assert.NotNil(t, store)
 	assert.NotNil(t, fileStore)
-	store = Instance()
+	store = Instance(&wrapper.DefaultOS{})
 	assert.NotNil(t, store)
 }
 
@@ -38,7 +37,7 @@ func TestStoreGetReturnsCorrectData(t *testing.T) {
 
 	os.WriteFile(consts.AGENT_STORE_FILENAME, []byte("test data"), 0644)
 
-	store := Instance()
+	store := Instance(&wrapper.DefaultOS{})
 	data, err := store.Get()
 
 	assert.Nil(t, err)
@@ -50,7 +49,7 @@ func TestStoreGetReturnsCorrectData(t *testing.T) {
 func TestStoreStoreWritesCorrectData(t *testing.T) {
 	resetStore()
 
-	store := Instance()
+	store := Instance(&wrapper.DefaultOS{})
 	err := store.Store([]byte("test data"))
 	assert.Nil(t, err)
 
@@ -70,13 +69,15 @@ func TestStoreCreatesFileWhenNotExists(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.True(t, os.IsNotExist(err))
 
-	Instance()
+	Instance(&wrapper.DefaultOS{})
 	file, err = os.Stat(consts.AGENT_STORE_FILENAME)
 	assert.NotNil(t, file)
 	assert.Nil(t, err)
 }
 
 func TestStoreHandlesFileCreationError(t *testing.T) {
+	resetStore()
+
 	wrapper := new(mocks.OperatingSystem)
 
 	os_err := fmt.Errorf("is not exists")
@@ -87,9 +88,11 @@ func TestStoreHandlesFileCreationError(t *testing.T) {
 		fs.FileMode(0644),
 	).Return(nil, fmt.Errorf("failed to create file"))
 
-	osWrapper = wrapper
+	store := FileStore{
+		osWrapper: wrapper,
+	}
 
-	err := createFileIfNotExists(consts.AGENT_STORE_FILENAME)
+	err := store.createFileIfNotExists(consts.AGENT_STORE_FILENAME)
 
 	assert.NotNil(t, err)
 	assert.Equal(t, "failed to create file", err.Error())
@@ -98,7 +101,8 @@ func TestStoreHandlesFileCreationError(t *testing.T) {
 
 func TestGetAgentInformationGeneratesDataWhenFileEmpty(t *testing.T) {
 	resetStore()
-	store := Instance()
+
+	store := Instance(&wrapper.DefaultOS{})
 	data := store.GetAgentInformation()
 
 	rawData, err := store.Get()
@@ -110,10 +114,13 @@ func TestGetAgentInformationGeneratesDataWhenFileEmpty(t *testing.T) {
 
 func TestGetAgentInformationReadsIDFromFile(t *testing.T) {
 	resetStore()
-	store := Instance()
+
 	agentInformation := types.AgentInformation{}
 	agentInformation.ID = uuid.New()
+
 	data, _ := json.Marshal(agentInformation)
+
+	store := Instance(&wrapper.DefaultOS{})
 	store.Store(data)
 
 	agent := store.GetAgentInformation()
@@ -123,11 +130,14 @@ func TestGetAgentInformationReadsIDFromFile(t *testing.T) {
 }
 
 func TestGetAgentInformationReturnsEmptyAgentWhenError(t *testing.T) {
+	resetStore()
+
 	wrapper := new(mocks.OperatingSystem)
 	wrapper.On("ReadFile", consts.AGENT_STORE_FILENAME).Return(nil, fmt.Errorf("failed to read data"))
 
-	store := &FileStore{}
-	osWrapper = wrapper
+	store := FileStore{
+		osWrapper: wrapper,
+	}
 
 	agent := store.GetAgentInformation()
 

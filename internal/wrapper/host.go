@@ -6,11 +6,15 @@ import (
 	"github.com/shirou/gopsutil/v3/host"
 )
 
+type HostInformation interface {
+	Info() (*types.Host, error)
+}
+
 type GopsHost struct {
 }
 
 var (
-	_ types.HostInformation = (*GopsHost)(nil)
+	_ HostInformation = (*GopsHost)(nil)
 )
 
 func (h *GopsHost) Info() (*types.Host, error) {

@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/PR-Developers/server-health-monitor/internal/consts"
-	"github.com/PR-Developers/server-health-monitor/internal/types"
 	"github.com/PR-Developers/server-health-monitor/internal/utils"
 	"github.com/PR-Developers/server-health-monitor/internal/wrapper"
 )
@@ -26,8 +25,8 @@ type StandardLogger struct {
 
 var (
 	logger    *StandardLogger
-	_         Logger                = (*StandardLogger)(nil)
-	osWrapper types.OperatingSystem = &wrapper.DefaultOS{}
+	_         Logger                  = (*StandardLogger)(nil)
+	osWrapper wrapper.OperatingSystem = &wrapper.DefaultOS{}
 )
 
 // Instance returns the active instance of the logger

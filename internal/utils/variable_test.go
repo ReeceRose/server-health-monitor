@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// No OS wrapper used here as mocking requires too mich boilerplate for this simple test
+// No OS wrapper used here as mocking requires too much boilerplate for this simple test
 // and the changes of os.Setenv/os.Getenv/os.Clearenv not working are minimal
 
 func TestGetVariableReturnsValueFromEnvironmentVariable(t *testing.T) {

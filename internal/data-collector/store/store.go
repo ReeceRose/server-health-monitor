@@ -19,37 +19,39 @@ type Store interface {
 var (
 	_         Store = (*FileStore)(nil)
 	fileStore *FileStore
-	osWrapper types.OperatingSystem = &wrapper.DefaultOS{}
 )
 
 type FileStore struct {
+	osWrapper wrapper.OperatingSystem
 }
 
 // Instance returns the active instance of the file store
-func Instance() *FileStore {
-	createFileIfNotExists(consts.AGENT_STORE_FILENAME)
-
+func Instance(wrapper wrapper.OperatingSystem) *FileStore {
 	if fileStore != nil {
 		return fileStore
 	}
-	fileStore = &FileStore{}
+
+	fileStore = &FileStore{
+		osWrapper: wrapper,
+	}
+	fileStore.createFileIfNotExists(consts.AGENT_STORE_FILENAME)
 	return fileStore
 }
 
 // Get reads a JSON file and returns the data
 func (s *FileStore) Get() ([]byte, error) {
-	return osWrapper.ReadFile(consts.AGENT_STORE_FILENAME)
+	return s.osWrapper.ReadFile(consts.AGENT_STORE_FILENAME)
 }
 
 // Store writes the desired JSON to a JSON file
 func (s *FileStore) Store(data []byte) error {
-	return osWrapper.WriteFile(consts.AGENT_STORE_FILENAME, data, 0644)
+	return s.osWrapper.WriteFile(consts.AGENT_STORE_FILENAME, data, 0644)
 }
 
 // createFileIfNotExists is a handy method which creates a given file if it does not exist
-func createFileIfNotExists(fileName string) error {
-	if _, err := osWrapper.Stat(fileName); osWrapper.IsNotExist(err) {
-		file, err := osWrapper.OpenFile(fileName, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+func (s *FileStore) createFileIfNotExists(fileName string) error {
+	if _, err := s.osWrapper.Stat(fileName); s.osWrapper.IsNotExist(err) {
+		file, err := s.osWrapper.OpenFile(fileName, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 		if err != nil {
 			return err
 		}

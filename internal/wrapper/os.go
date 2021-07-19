@@ -3,17 +3,22 @@ package wrapper
 import (
 	"io/fs"
 	"os"
-
-	"github.com/PR-Developers/server-health-monitor/internal/types"
 )
+
+type OperatingSystem interface {
+	OpenFile(string, int, fs.FileMode) (*os.File, error)
+	ReadFile(string) ([]byte, error)
+	WriteFile(string, []byte, os.FileMode) error
+	IsNotExist(error) bool
+	Stat(string) (os.FileInfo, error)
+	Remove(string) error
+}
 
 type DefaultOS struct {
 }
 
-const ()
-
 var (
-	_ types.OperatingSystem = (*DefaultOS)(nil)
+	_ OperatingSystem = (*DefaultOS)(nil)
 )
 
 func (d *DefaultOS) OpenFile(name string, flag int, perm fs.FileMode) (*os.File, error) {

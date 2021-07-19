@@ -12,6 +12,7 @@ import (
 	"github.com/PR-Developers/server-health-monitor/internal/data-collector/store"
 	"github.com/PR-Developers/server-health-monitor/internal/types"
 	"github.com/PR-Developers/server-health-monitor/internal/utils"
+	"github.com/PR-Developers/server-health-monitor/internal/wrapper"
 )
 
 type Client interface {
@@ -31,7 +32,7 @@ var (
 
 // NewClient returns an instanced HTTP client
 func NewClient(baseURL string) (*StandardClient, error) {
-	store := store.Instance()
+	store := store.Instance(&wrapper.DefaultOS{})
 	certDir := utils.GetVariable(consts.CERT_DIR)
 	caCert, err := ioutil.ReadFile(certDir + "/" + utils.GetVariable(consts.CLIENT_CERT))
 	if err != nil {

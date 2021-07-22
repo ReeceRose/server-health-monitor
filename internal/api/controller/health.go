@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"github.com/PR-Developers/server-health-monitor/internal/api/service"
 	"github.com/PR-Developers/server-health-monitor/internal/repository"
+	"github.com/PR-Developers/server-health-monitor/internal/service"
 	"github.com/PR-Developers/server-health-monitor/internal/types"
 	"github.com/labstack/echo/v4"
 )

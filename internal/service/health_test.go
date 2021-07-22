@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/PR-Developers/server-health-monitor/internal/api/service/mocks"
 	"github.com/PR-Developers/server-health-monitor/internal/repository"
+	"github.com/PR-Developers/server-health-monitor/internal/service/mocks"
 	"github.com/PR-Developers/server-health-monitor/internal/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

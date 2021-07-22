@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// Database is an interface which provides method signatures for interacting with a database
 type Database interface {
 	Disconnect() error
 	Client() *mongo.Client //TODO: either further refactor or accept this

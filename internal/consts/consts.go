@@ -2,6 +2,7 @@ package consts
 
 const (
 	// Constant keys
+
 	// API_URL is a key used to lookup the api url
 	API_URL = "API_URL"
 	// API_PORT is a key used to lookup the api port
@@ -26,10 +27,12 @@ const (
 	LOG_FILE = "LOG_FILE"
 
 	// Constant filenames
+
 	// AGENT_STORE_FILENAME is the file location of agent filestore
 	AGENT_STORE_FILENAME = "config.json"
 
 	// Constant collection names
+
 	// COLLECTION_HEALTH is the collection name used for health collection
 	COLLECTION_HEALTH = "health"
 )

@@ -15,19 +15,20 @@ import (
 	"github.com/PR-Developers/server-health-monitor/internal/wrapper"
 )
 
+// Client is an interface which provides method signatures for a HTTP client
 type Client interface {
 	Get(string) ([]byte, int, error)
 	Post(string, io.Reader) ([]byte, int, error)
 }
 
-type StandardClient struct {
+type standardClient struct {
 	baseURL          string
 	httpClient       *http.Client
 	agentInformation types.AgentInformation
 }
 
 var (
-	_ Client = (*StandardClient)(nil)
+	_ Client = (*standardClient)(nil)
 )
 
 // NewClient returns an instanced HTTP client
@@ -41,7 +42,7 @@ func NewClient(baseURL string) (Client, error) {
 	caCertPool := x509.NewCertPool()
 	caCertPool.AppendCertsFromPEM(caCert)
 
-	return &StandardClient{
+	return &standardClient{
 		baseURL: baseURL,
 		httpClient: &http.Client{
 			Timeout: time.Second * 30,
@@ -56,7 +57,7 @@ func NewClient(baseURL string) (Client, error) {
 }
 
 // makeRequest will make any HTTP request and also sends common data required for each request
-func (c *StandardClient) makeRequest(method string, url string, body io.Reader) ([]byte, int, error) {
+func (c *standardClient) makeRequest(method string, url string, body io.Reader) ([]byte, int, error) {
 	request, err := http.NewRequest(method, c.baseURL+url, body)
 	if err != nil {
 		return nil, -100, err
@@ -80,11 +81,11 @@ func (c *StandardClient) makeRequest(method string, url string, body io.Reader) 
 }
 
 // Get makes a GET request to a given URL
-func (c *StandardClient) Get(url string) ([]byte, int, error) {
+func (c *standardClient) Get(url string) ([]byte, int, error) {
 	return c.makeRequest("GET", url, nil)
 }
 
 // Post makes a POST request to a givn URL
-func (c *StandardClient) Post(url string, data io.Reader) ([]byte, int, error) {
+func (c *standardClient) Post(url string, data io.Reader) ([]byte, int, error) {
 	return c.makeRequest("POST", url, data)
 }

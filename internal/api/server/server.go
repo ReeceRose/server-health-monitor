@@ -12,26 +12,28 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+// Server is an interface which provides method signatures for an HTTP server
 type Server interface {
 	Start()
 }
 
-type EchoServer struct {
+type echoServer struct {
 	Instance *echo.Echo
 }
 
 var (
-	_ Server = (*EchoServer)(nil)
+	_ Server = (*echoServer)(nil)
 )
 
+// New returns a new instance of an echo HTTP server
 func New() Server {
-	return &EchoServer{
+	return &echoServer{
 		Instance: echo.New(),
 	}
 }
 
 // Start the web server
-func (s *EchoServer) Start() {
+func (s *echoServer) Start() {
 	e := s.Instance
 
 	// Currently this server is only used for the core API so the logic below

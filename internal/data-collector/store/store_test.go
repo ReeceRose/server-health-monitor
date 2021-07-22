@@ -80,9 +80,9 @@ func TestStoreHandlesFileCreationError(t *testing.T) {
 
 	wrapper := new(mocks.OperatingSystem)
 
-	os_err := fmt.Errorf("is not exists")
-	wrapper.On("Stat", consts.AGENT_STORE_FILENAME).Return(nil, os_err)
-	wrapper.On("IsNotExist", os_err).Return(true)
+	osErr := fmt.Errorf("is not exists")
+	wrapper.On("Stat", consts.AGENT_STORE_FILENAME).Return(nil, osErr)
+	wrapper.On("IsNotExist", osErr).Return(true)
 	wrapper.On("OpenFile",
 		consts.AGENT_STORE_FILENAME, os.O_CREATE|os.O_APPEND|os.O_WRONLY,
 		fs.FileMode(0644),

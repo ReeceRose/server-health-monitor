@@ -10,12 +10,12 @@ import (
 	"github.com/PR-Developers/server-health-monitor/internal/utils"
 )
 
-type HealthRepository struct {
+type healthRepository struct {
 	*baseRepository
 }
 
 var (
-	_ IHealthRepository = (*HealthRepository)(nil)
+	_ IHealthRepository = (*healthRepository)(nil)
 )
 
 // NewHealthRepository returns an instanced health repository
@@ -23,7 +23,7 @@ func NewHealthRepository() IHealthRepository {
 	db, _ := database.Instance()
 	// client := db.Client()
 	// client.Database()
-	return &HealthRepository{
+	return &healthRepository{
 		baseRepository: &baseRepository{
 			db:             db,
 			collection:     db.Client().Database(utils.GetVariable(consts.DB_NAME)).Collection(consts.COLLECTION_HEALTH),
@@ -34,7 +34,7 @@ func NewHealthRepository() IHealthRepository {
 }
 
 // Find all health data given a certain query
-func (r *HealthRepository) Find(query interface{}) ([]types.Health, error) {
+func (r *healthRepository) Find(query interface{}) ([]types.Health, error) {
 	cursor, err := r.collection.Find(r.db.Context(), query)
 	if err != nil {
 		msg := fmt.Sprintf("failed to read data from collection: %s with query: %s (%s)", r.collectionName, query, err.Error())
@@ -56,7 +56,7 @@ func (r *HealthRepository) Find(query interface{}) ([]types.Health, error) {
 }
 
 // Insert a single record into the database
-func (r *HealthRepository) Insert(data *types.Health) (string, error) {
+func (r *healthRepository) Insert(data *types.Health) (string, error) {
 	res, err := r.collection.InsertOne(r.db.Context(), data)
 	if err != nil {
 		msg := fmt.Sprintf("failed to insert data into collection: %s", r.collectionName)

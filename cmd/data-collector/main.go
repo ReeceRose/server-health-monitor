@@ -14,10 +14,6 @@ import (
 	"github.com/PR-Developers/server-health-monitor/internal/utils"
 )
 
-type Host struct {
-	Hostname string
-}
-
 func main() {
 	log := logger.Instance()
 	log.Info("Server Health Monitor - Data Collector Tool")

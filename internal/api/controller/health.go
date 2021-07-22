@@ -7,10 +7,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// HealthController provides a health service to interact with
 type HealthController struct {
-	service *service.HealthService
+	service service.IHealthService
 }
 
+// NewHealthController returns a new HealthController with the service/repository initialized
 func NewHealthController() *HealthController {
 	return &HealthController{
 		service: service.NewHealthService(repository.NewHealthRepository()),
@@ -36,7 +38,7 @@ func (controller *HealthController) GetHealthByAgentId(c echo.Context) error {
 	return c.JSON(res.StatusCode, res)
 }
 
-// AddHealth adds health data for an agent
+// PostHealth adds health data for an agent
 func (controller *HealthController) PostHealth(c echo.Context) error {
 	health := new(types.Health)
 

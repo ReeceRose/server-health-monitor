@@ -15,7 +15,7 @@ import (
 //go:generate mockery --dir=../../ -r --name IHealthRepository
 
 type testServiceHelper struct {
-	service *HealthService
+	service IHealthService
 	repo    repository.IHealthRepository
 	mock    *mock.Mock
 }

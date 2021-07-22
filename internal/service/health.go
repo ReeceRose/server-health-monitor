@@ -13,21 +13,25 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type HealthService struct {
+type healthService struct {
 	healthRepository repository.IHealthRepository
 	log              logger.Logger
 }
 
+var (
+	_ IHealthService = (*healthService)(nil)
+)
+
 // NewHealthService returns an instanced health service
-func NewHealthService(repository repository.IHealthRepository) *HealthService {
-	return &HealthService{
+func NewHealthService(repository repository.IHealthRepository) IHealthService {
+	return &healthService{
 		healthRepository: repository,
 		log:              logger.Instance(),
 	}
 }
 
 // GetHealth returns all health data
-func (s *HealthService) GetHealth(requestID string) types.StandardResponse {
+func (s *healthService) GetHealth(requestID string) types.StandardResponse {
 	s.log.Info("attemping to get all health - Request ID: " + requestID)
 	data, err := s.healthRepository.Find(bson.M{})
 	if err != nil {
@@ -49,7 +53,7 @@ func (s *HealthService) GetHealth(requestID string) types.StandardResponse {
 }
 
 // GetHealthByAgentID returns all health data for a given agent
-func (s *HealthService) GetHealthByAgentID(requestID, agentID string) types.StandardResponse {
+func (s *healthService) GetHealthByAgentID(requestID, agentID string) types.StandardResponse {
 	s.log.Info(fmt.Sprintf("attemping to get health data for agent: %s - Request ID: %s", agentID, requestID))
 
 	data, err := s.healthRepository.Find(bson.M{"agentID": agentID})
@@ -72,7 +76,7 @@ func (s *HealthService) GetHealthByAgentID(requestID, agentID string) types.Stan
 }
 
 // AddHealth inserts new health data for a given agent
-func (s *HealthService) AddHealth(requestID string, agentID string, data *types.Health) types.StandardResponse {
+func (s *healthService) AddHealth(requestID string, agentID string, data *types.Health) types.StandardResponse {
 	s.log.Info(fmt.Sprintf("attemping to insert health data for agent: %s - Request ID: %s", agentID, requestID))
 
 	data.AgentID = agentID

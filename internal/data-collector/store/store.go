@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// Store is used to persist machine information
+// Store is an interface which provides method signatures for storing persistent information
 type Store interface {
 	// Core
 	Get() ([]byte, error)
@@ -25,6 +25,7 @@ var (
 	fileStore *FileStore
 )
 
+// FileStore is a filestore implementation of a store
 type FileStore struct {
 	osWrapper wrapper.OperatingSystem
 }

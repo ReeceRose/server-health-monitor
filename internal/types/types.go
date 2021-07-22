@@ -5,6 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// StandardResponse is used to standardize the returns for all HTTP endpoint
 type StandardResponse struct {
 	Data       interface{}
 	StatusCode int
@@ -12,6 +13,7 @@ type StandardResponse struct {
 	Success    bool
 }
 
+// Health contains all information realted to an agents health
 type Health struct {
 	// TODO: decide if host should be apart of 'health' or just apart of 'host'
 	// (host information should mostly stay the same, and maybe we'll just send it at startup,
@@ -23,6 +25,7 @@ type Health struct {
 	UpdateTime int64              `json:"updateTime" bson:"updateTime"`
 }
 
+// Host contains all information about the agent/host
 type Host struct {
 	Hostname             string `json:"hostname" bson:"hostname"`
 	Uptime               uint64 `json:"uptime" bson:"uptime"`
@@ -39,6 +42,7 @@ type Host struct {
 	HostID               string `json:"hostId" bson:"hostId"`
 }
 
+// AgentInformation contains an ID which is used to differentiate between different agents
 type AgentInformation struct {
 	ID uuid.UUID
 }

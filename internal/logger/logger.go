@@ -10,6 +10,7 @@ import (
 	"github.com/PR-Developers/server-health-monitor/internal/wrapper"
 )
 
+// Logger is an interface which provides method signatures for logging to files/console
 type Logger interface {
 	Info(string)
 	Warning(string)
@@ -17,7 +18,7 @@ type Logger interface {
 	Logger() *log.Logger
 }
 
-type StandardLogger struct {
+type standardLogger struct {
 	infoLogger    *log.Logger
 	warningLogger *log.Logger
 	errorLogger   *log.Logger
@@ -25,8 +26,8 @@ type StandardLogger struct {
 }
 
 var (
-	logger    *StandardLogger
-	_         Logger                  = (*StandardLogger)(nil)
+	logger    *standardLogger
+	_         Logger                  = (*standardLogger)(nil)
 	osWrapper wrapper.OperatingSystem = &wrapper.DefaultOS{}
 )
 
@@ -40,7 +41,7 @@ func Instance() Logger {
 		return nil
 	}
 	mw := io.MultiWriter(os.Stdout, file)
-	logger = &StandardLogger{
+	logger = &standardLogger{
 		infoLogger:    log.New(mw, "INFO: ", log.Ldate|log.Ltime),
 		warningLogger: log.New(mw, "WARNING: ", log.Ldate|log.Ltime),
 		errorLogger:   log.New(mw, "ERROR: ", log.Ldate|log.Ltime),
@@ -51,20 +52,21 @@ func Instance() Logger {
 }
 
 // Info should be used to log generic log messages
-func (l *StandardLogger) Info(message string) {
+func (l *standardLogger) Info(message string) {
 	l.infoLogger.Println(message)
 }
 
 // Warning should be used to log events of concern
-func (l *StandardLogger) Warning(message string) {
+func (l *standardLogger) Warning(message string) {
 	l.warningLogger.Println(message)
 }
 
 // Error should be used to log unexpected behaviour
-func (l *StandardLogger) Error(message string) {
+func (l *standardLogger) Error(message string) {
 	l.errorLogger.Println(message)
 }
 
-func (l *StandardLogger) Logger() *log.Logger {
+// Logger returns a generic instance of a default logger
+func (l *standardLogger) Logger() *log.Logger {
 	return l.genericLogger
 }

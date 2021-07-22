@@ -13,14 +13,14 @@ import (
 )
 
 type HealthService struct {
-	healthRepository *repository.HealthRepository
+	healthRepository repository.IHealthRepository
 	log              logger.Logger
 }
 
 // NewHealthService returns an instanced health service
-func NewHealthService() *HealthService {
+func NewHealthService(repository repository.IHealthRepository) *HealthService {
 	return &HealthService{
-		healthRepository: repository.NewHealthRepository(),
+		healthRepository: repository,
 		log:              logger.Instance(),
 	}
 }
@@ -28,7 +28,6 @@ func NewHealthService() *HealthService {
 // GetHealth returns all health data
 func (s *HealthService) GetHealth(requestID string) types.StandardResponse {
 	s.log.Info("attemping to get all health - Request ID: " + requestID)
-
 	data, err := s.healthRepository.Find(bson.M{})
 	if err != nil {
 		return types.StandardResponse{

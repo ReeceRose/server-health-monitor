@@ -21,7 +21,7 @@ func resetLogger() {
 	osWrapper = &wrapper.DefaultOS{}
 }
 
-func TestInstanceInitializesLogger(t *testing.T) {
+func TestLogger_Instance_InitializesLogger(t *testing.T) {
 	resetLogger()
 
 	assert.Nil(t, logger)
@@ -32,7 +32,7 @@ func TestInstanceInitializesLogger(t *testing.T) {
 	assert.NotNil(t, log)
 }
 
-func TestLoggerFailsToOpenFile(t *testing.T) {
+func TestLogger_Instance_ReturnsNilWhenFileFails(t *testing.T) {
 	logger = nil
 	wrapper := new(mocks.OperatingSystem)
 
@@ -47,7 +47,7 @@ func TestLoggerFailsToOpenFile(t *testing.T) {
 	wrapper.AssertExpectations(t)
 }
 
-func TestLoggerWritesInfoTag(t *testing.T) {
+func TestLogger_Info_WritesInfoTag(t *testing.T) {
 	resetLogger()
 
 	log := Instance()
@@ -58,7 +58,7 @@ func TestLoggerWritesInfoTag(t *testing.T) {
 	osWrapper.Remove(consts.LOG_FILE)
 }
 
-func TestLoggerWritesWarningTag(t *testing.T) {
+func TestLogger_Warning_WritesWarningTag(t *testing.T) {
 	resetLogger()
 
 	log := Instance()
@@ -70,7 +70,7 @@ func TestLoggerWritesWarningTag(t *testing.T) {
 	osWrapper.Remove(consts.LOG_FILE)
 }
 
-func TestLoggerWritesErrorTag(t *testing.T) {
+func TestLogger_Error_WritesErrorTag(t *testing.T) {
 	resetLogger()
 
 	log := Instance()

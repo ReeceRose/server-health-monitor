@@ -2,10 +2,12 @@ package repository
 
 import (
 	"github.com/PR-Developers/server-health-monitor/internal/database"
+	"github.com/PR-Developers/server-health-monitor/internal/logger"
 	"github.com/PR-Developers/server-health-monitor/internal/types"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type healthRepository interface {
+type IHealthRepository interface {
 	Find(query interface{}) ([]types.Health, error)
 	// FindOne(where ...interface{}) (types.Health, error)
 	Insert(*types.Health) (string, error)
@@ -14,5 +16,8 @@ type healthRepository interface {
 }
 
 type baseRepository struct {
-	db *database.MongoDB
+	db             *database.MongoDB
+	collection     *mongo.Collection
+	collectionName string // collection.Name() is an alternative but this is a static name so no need to query it
+	log            logger.Logger
 }

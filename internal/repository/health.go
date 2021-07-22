@@ -8,30 +8,26 @@ import (
 	"github.com/PR-Developers/server-health-monitor/internal/logger"
 	"github.com/PR-Developers/server-health-monitor/internal/types"
 	"github.com/PR-Developers/server-health-monitor/internal/utils"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type HealthRepository struct {
 	*baseRepository
-	collection     *mongo.Collection
-	collectionName string // collection.Name() is an alternative but this is a static name so no need to query it
-	log            logger.Logger
 }
 
 var (
-	_ healthRepository = (*HealthRepository)(nil)
+	_ IHealthRepository = (*HealthRepository)(nil)
 )
 
 // NewHealthRepository returns an instanced health repository
-func NewHealthRepository() *HealthRepository {
+func NewHealthRepository() IHealthRepository {
 	db, _ := database.Instance()
 	return &HealthRepository{
 		baseRepository: &baseRepository{
-			db: db,
+			db:             db,
+			collection:     db.Client.Database(utils.GetVariable(consts.DB_NAME)).Collection(consts.COLLECTION_HEALTH),
+			collectionName: consts.COLLECTION_HEALTH,
+			log:            logger.Instance(),
 		},
-		collection:     db.Client.Database(utils.GetVariable(consts.DB_NAME)).Collection(consts.COLLECTION_HEALTH),
-		collectionName: consts.COLLECTION_HEALTH,
-		log:            logger.Instance(),
 	}
 }
 

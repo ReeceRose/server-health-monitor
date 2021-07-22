@@ -12,7 +12,7 @@ import (
 // No OS wrapper used here as mocking requires too much boilerplate for this simple test
 // and the changes of os.Setenv/os.Getenv/os.Clearenv not working are minimal
 
-func TestGetVariableReturnsValueFromEnvironmentVariable(t *testing.T) {
+func TestVariable_GetVariable_ReturnsValueFromEnvironmentVariable(t *testing.T) {
 	os.Clearenv()
 	os.Setenv(consts.API_PORT, "4000")
 	os.Setenv(consts.API_URL, "https://api.pr-developers.com/api/v1")
@@ -41,7 +41,7 @@ func TestGetVariableReturnsValueFromEnvironmentVariable(t *testing.T) {
 	os.Clearenv()
 }
 
-func TestGetVariableDefaultsValue(t *testing.T) {
+func TestVariable_GetVariable_ReturnsDefaultValues(t *testing.T) {
 	os.Clearenv()
 	assert.Equal(t, "3000", GetVariable(consts.API_PORT))
 	assert.Equal(t, "https://localhost:3000/api/v1/", GetVariable(consts.API_URL))
@@ -57,6 +57,6 @@ func TestGetVariableDefaultsValue(t *testing.T) {
 	assert.Equal(t, "", GetVariable("test-value"))
 }
 
-func TestGetVariableWithArgsReturnsFromArgs(t *testing.T) {
+func TestVariable_GetVariable_WithArgsReturnsFromArgs(t *testing.T) {
 
 }

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/PR-Developers/server-health-monitor/internal/api/service"
+	"github.com/PR-Developers/server-health-monitor/internal/repository"
 	"github.com/PR-Developers/server-health-monitor/internal/types"
 	"github.com/labstack/echo/v4"
 )
@@ -12,7 +13,7 @@ type HealthController struct {
 
 func NewHealthController() *HealthController {
 	return &HealthController{
-		service: service.NewHealthService(),
+		service: service.NewHealthService(repository.NewHealthRepository()),
 	}
 }
 

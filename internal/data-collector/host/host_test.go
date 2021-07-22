@@ -11,7 +11,7 @@ import (
 
 //go:generate mockery --dir=../../ -r --name HostInformation
 
-func TestHostGetInfo(t *testing.T) {
+func TestHost_GetInfo_ReturnsExpectedHostInformation(t *testing.T) {
 	wrapper := new(mocks.HostInformation)
 	hostInfo := &types.Host{
 		Hostname: "test",
@@ -28,7 +28,7 @@ func TestHostGetInfo(t *testing.T) {
 	wrapper.AssertExpectations(t)
 }
 
-func TestHostGetInfoHandlesError(t *testing.T) {
+func TestHost_GetInfo_HandlesError(t *testing.T) {
 	wrapper := new(mocks.HostInformation)
 	wrapper.On("Info").Return(nil, fmt.Errorf("platform not supported"))
 

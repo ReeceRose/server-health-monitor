@@ -15,14 +15,14 @@ type Database interface {
 	Context() context.Context
 }
 
-type MongoDB struct {
+type mongoDB struct {
 	client *mongo.Client
 	// context context.Context
 }
 
 var (
-	database *MongoDB
-	_        Database = (*MongoDB)(nil)
+	database *mongoDB
+	_        Database = (*mongoDB)(nil)
 )
 
 // Instance returns the active instance of the database
@@ -41,21 +41,23 @@ func Instance() (Database, error) {
 		return nil, err
 	}
 
-	database = &MongoDB{
+	database = &mongoDB{
 		client: client,
 	}
 	return database, nil
 }
 
 // Disconnect is used to disconnect the database at the end of a session
-func (db *MongoDB) Disconnect() error {
+func (db *mongoDB) Disconnect() error {
 	return database.client.Disconnect(context.Background())
 }
 
-func (db *MongoDB) Client() *mongo.Client {
+// Client returns the active database client
+func (db *mongoDB) Client() *mongo.Client {
 	return database.client
 }
 
-func (db *MongoDB) Context() context.Context {
+// Context returns a new context which is used by the database
+func (db *mongoDB) Context() context.Context {
 	return context.Background()
 }

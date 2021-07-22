@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// IHealthRepository is an interface which provides method signatures for a health repository
 type IHealthRepository interface {
 	Find(query interface{}) ([]types.Health, error)
 	// FindOne(where ...interface{}) (types.Health, error)

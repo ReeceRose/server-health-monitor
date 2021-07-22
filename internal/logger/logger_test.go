@@ -82,3 +82,17 @@ func TestLogger_Error_WritesErrorTag(t *testing.T) {
 
 	osWrapper.Remove(consts.LOG_FILE)
 }
+
+func TestLogger_Logger_ReturnsLogger(t *testing.T) {
+	resetLogger()
+
+	log := Instance()
+
+	logger := log.Logger()
+	logger.Println("generic message")
+	data, _ := osWrapper.ReadFile(utils.GetVariable(consts.LOG_FILE))
+
+	assert.Contains(t, string(data), "generic message")
+
+	osWrapper.Remove(consts.LOG_FILE)
+}

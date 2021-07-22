@@ -14,13 +14,14 @@ type Logger interface {
 	Info(string)
 	Warning(string)
 	Error(string)
+	Logger() *log.Logger
 }
 
 type StandardLogger struct {
 	infoLogger    *log.Logger
 	warningLogger *log.Logger
 	errorLogger   *log.Logger
-	GenericLogger *log.Logger
+	genericLogger *log.Logger
 }
 
 var (
@@ -30,7 +31,7 @@ var (
 )
 
 // Instance returns the active instance of the logger
-func Instance() *StandardLogger {
+func Instance() Logger {
 	if logger != nil {
 		return logger
 	}
@@ -43,7 +44,7 @@ func Instance() *StandardLogger {
 		infoLogger:    log.New(mw, "INFO: ", log.Ldate|log.Ltime),
 		warningLogger: log.New(mw, "WARNING: ", log.Ldate|log.Ltime),
 		errorLogger:   log.New(mw, "ERROR: ", log.Ldate|log.Ltime),
-		GenericLogger: log.New(mw, "", log.Ldate|log.Ltime),
+		genericLogger: log.New(mw, "", log.Ldate|log.Ltime),
 	}
 
 	return logger
@@ -62,4 +63,8 @@ func (l *StandardLogger) Warning(message string) {
 // Error should be used to log unexpected behaviour
 func (l *StandardLogger) Error(message string) {
 	l.errorLogger.Println(message)
+}
+
+func (l *StandardLogger) Logger() *log.Logger {
+	return l.genericLogger
 }

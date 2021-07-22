@@ -24,7 +24,7 @@ var (
 	_ Server = (*EchoServer)(nil)
 )
 
-func New() *EchoServer {
+func New() Server {
 	return &EchoServer{
 		Instance: echo.New(),
 	}
@@ -42,7 +42,7 @@ func (s *EchoServer) Start() {
 	e.Use(middleware.RequestID())
 	e.Use(middleware.Recover())
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Output: logger.Instance().GenericLogger.Writer(),
+		Output: logger.Instance().Logger().Writer(),
 	}))
 
 	router.Setup(e)

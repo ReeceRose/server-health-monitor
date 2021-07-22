@@ -11,11 +11,13 @@ import (
 
 type Database interface {
 	Disconnect() error
+	Client() *mongo.Client //TODO: either further refactor or accept this
+	Context() context.Context
 }
 
 type MongoDB struct {
-	Client  *mongo.Client
-	Context context.Context
+	client *mongo.Client
+	// context context.Context
 }
 
 var (
@@ -24,7 +26,7 @@ var (
 )
 
 // Instance returns the active instance of the database
-func Instance() (*MongoDB, error) {
+func Instance() (Database, error) {
 	if database != nil {
 		return database, nil
 	}
@@ -40,13 +42,20 @@ func Instance() (*MongoDB, error) {
 	}
 
 	database = &MongoDB{
-		Client:  client,
-		Context: context.Background(),
+		client: client,
 	}
 	return database, nil
 }
 
 // Disconnect is used to disconnect the database at the end of a session
 func (db *MongoDB) Disconnect() error {
-	return database.Client.Disconnect(db.Context)
+	return database.client.Disconnect(context.Background())
+}
+
+func (db *MongoDB) Client() *mongo.Client {
+	return database.client
+}
+
+func (db *MongoDB) Context() context.Context {
+	return context.Background()
 }

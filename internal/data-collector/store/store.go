@@ -12,8 +12,12 @@ import (
 
 // Store is used to persist machine information
 type Store interface {
+	// Core
 	Get() ([]byte, error)
 	Store([]byte) error
+
+	// Custom
+	GetAgentInformation() types.AgentInformation
 }
 
 var (
@@ -26,7 +30,7 @@ type FileStore struct {
 }
 
 // Instance returns the active instance of the file store
-func Instance(wrapper wrapper.OperatingSystem) *FileStore {
+func Instance(wrapper wrapper.OperatingSystem) Store {
 	if fileStore != nil {
 		return fileStore
 	}

@@ -31,7 +31,7 @@ var (
 )
 
 // NewClient returns an instanced HTTP client
-func NewClient(baseURL string) (*StandardClient, error) {
+func NewClient(baseURL string) (Client, error) {
 	store := store.Instance(&wrapper.DefaultOS{})
 	certDir := utils.GetVariable(consts.CERT_DIR)
 	caCert, err := ioutil.ReadFile(certDir + "/" + utils.GetVariable(consts.CLIENT_CERT))

@@ -16,7 +16,7 @@ type IHealthRepository interface {
 }
 
 type baseRepository struct {
-	db             *database.MongoDB
+	db             database.Database
 	collection     *mongo.Collection
 	collectionName string // collection.Name() is an alternative but this is a static name so no need to query it
 	log            logger.Logger

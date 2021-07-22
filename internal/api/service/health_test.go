@@ -13,7 +13,7 @@ import (
 type testServiceHelper struct {
 	service *HealthService
 	repo    repository.IHealthRepository
-	mock    mock.Mock
+	mock    *mock.Mock
 }
 
 func getInitializedHealthService() testServiceHelper {
@@ -24,7 +24,7 @@ func getInitializedHealthService() testServiceHelper {
 	return testServiceHelper{
 		service: service,
 		repo:    repo,
-		mock:    repo.Mock,
+		mock:    &repo.Mock,
 	}
 }
 

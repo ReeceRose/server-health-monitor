@@ -8,6 +8,6 @@ RUN go mod download
 
 RUN go build -o ./out/api cmd/api/main.go
 
-EXPOSE ${API_PORT}
+EXPOSE 3000
 
 ENTRYPOINT [ "./out/api" ]

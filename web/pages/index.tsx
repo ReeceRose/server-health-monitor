@@ -1,12 +1,9 @@
-import SEO from '../components/SEO';
-
 export default function Home(): JSX.Element {
   return (
-    <div>
-      <SEO
-        title="Server Health Monitor"
-        description="Monitor servers health from one central location"
-      />
+    <div className="flex flex-wrap">
+      <div className="w-full px-4 mb-12 xl:mb-0">
+        <div className="div"></div>
+      </div>
     </div>
   );
 }

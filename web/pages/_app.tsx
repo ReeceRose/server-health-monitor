@@ -4,6 +4,7 @@ import SEO from '../components/SEO';
 import Layout from '../layouts/Default';
 
 import '../styles/globals.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   useEffect(() => {
@@ -12,8 +13,7 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
       document.documentElement.classList.add(localStorage.theme);
     }
   }, []);
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  // return <Component {...pageProps} />;
+
   return (
     <>
       <SEO

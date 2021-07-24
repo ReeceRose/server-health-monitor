@@ -1,5 +1,5 @@
-// import Navbar from '../components/Navbar';
-// import StatsHeader from '../components/Headers/Stats';
+import Navbar from '../components/Navbar';
+import AgentStats from '../components/Headers/AgentStats';
 import Footer from '../components/Footer';
 
 type Props = {
@@ -8,12 +8,11 @@ type Props = {
 
 const Default: React.FC<Props> = ({ children }) => {
   return (
-    <div className="relative flex flex-col w-full min-h-screen bg-blueGray-100">
-      {/* <Navbar /> */}
-      {/* Header */}
-      {/* <StatsHeader /> */}
-      <div className="flex-grow px-4 mx-auto mb-0 -m-24 md:px-10">
-        <div>{children}</div>
+    <div className="relative flex flex-col w-full min-h-screen bg-gray-100">
+      <Navbar />
+      <AgentStats />
+      <div className="flex-grow w-full px-4 mx-auto mb-0 -m-24 md:px-10">
+        {children}
       </div>
       <Footer />
     </div>

@@ -3,13 +3,132 @@
 exports[`Default layout page matches snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="relative flex flex-col w-full min-h-screen bg-blueGray-100"
+    class="relative flex flex-col w-full min-h-screen bg-gray-100"
   >
-    <div
-      class="flex-grow px-4 mx-auto mb-0 -m-24 md:px-10"
+    <nav
+      class="absolute top-0 left-0 z-10 flex items-center w-full p-4 bg-transparent md:flex-row md:flex-nowrap md:justify-start"
     >
-      <div />
+      <div
+        class="flex flex-wrap items-center justify-between w-full px-4 mx-autp md:flex-nowrap md:px-10"
+      >
+        <a
+          class="hidden text-sm font-semibold text-white uppercase lg:inline-block"
+          href="/"
+        >
+          Dashboard
+        </a>
+        <ul
+          class="flex-col items-center hidden list-none md:flex-row md:flex"
+        >
+          <button
+            class="block px-3 py-1 text-gray-200"
+          >
+            <i
+              class="fas fa-bell"
+            />
+          </button>
+        </ul>
+      </div>
+    </nav>
+    <div
+      class="relative pt-12 pb-32 bg-gray-800 md:pt-32"
+    >
+      <div
+        class="w-full px-4 mx-auto md:px-10"
+      >
+        <div>
+          <div
+            class="flex flex-wrap"
+          >
+            <div
+              class="w-full px-4 lg:w-6/12 xl:w-3/12"
+            >
+              <div
+                class="relative flex flex-col min-w-0 mb-6 break-words bg-white rounded shadow-lg xl:mb-0"
+              >
+                <div
+                  class="flex-auto p-4"
+                >
+                  <div
+                    class="flex flex-wrap"
+                  >
+                    <div
+                      class="relative flex-1 flex-grow w-full max-w-full pr-4"
+                    >
+                      <h5
+                        class="text-xs font-bold text-gray-400 uppercase"
+                      >
+                        ACTIVE SERVERS
+                      </h5>
+                      <span
+                        class="text-xl font-semibold text-gray-700"
+                      >
+                        2
+                      </span>
+                    </div>
+                    <div
+                      class="relative flex-initial w-auto pl-4"
+                    >
+                      <div
+                        class="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-green-400"
+                      >
+                        <i
+                          class="fas fa-server"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="w-full px-4 lg:w-6/12 xl:w-3/12"
+            >
+              <div
+                class="relative flex flex-col min-w-0 mb-6 break-words bg-white rounded shadow-lg xl:mb-0"
+              >
+                <div
+                  class="flex-auto p-4"
+                >
+                  <div
+                    class="flex flex-wrap"
+                  >
+                    <div
+                      class="relative flex-1 flex-grow w-full max-w-full pr-4"
+                    >
+                      <h5
+                        class="text-xs font-bold text-gray-400 uppercase"
+                      >
+                        INACTIVE SERVERS
+                      </h5>
+                      <span
+                        class="text-xl font-semibold text-gray-700"
+                      >
+                        2
+                      </span>
+                    </div>
+                    <div
+                      class="relative flex-initial w-auto pl-4"
+                    >
+                      <div
+                        class="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-red-400"
+                      >
+                        <i
+                          class="fas fa-server"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+    <div
+      class="flex-grow w-full px-4 mx-auto mb-0 -m-24 md:px-10"
+    />
     <footer
       class="block py-4 absoulte"
     >
@@ -17,7 +136,7 @@ exports[`Default layout page matches snapshot 1`] = `
         class="container px-24 mx-auto"
       >
         <hr
-          class="mb-4 border-b-1 border-blueGray-200"
+          class="mb-4 border-gray-200 border-b-1"
         />
         <div
           class="flex flex-wrap items-center justify-center md:justify-between"
@@ -26,11 +145,11 @@ exports[`Default layout page matches snapshot 1`] = `
             class="w-full px-4 md:w-4/12"
           >
             <div
-              class="py-1 text-sm font-semibold text-center text-blueGray-500 md:text-left"
+              class="py-1 text-sm font-semibold text-center text-gray-500 md:text-left"
             >
               Copyright © 2021 
               <a
-                class="py-1 text-sm font-semibold text-blueGray-500 hover:text-blueGray-700"
+                class="py-1 text-sm font-semibold text-gray-500 hover:text-gray-700"
                 href="https://github.com/PR-Developers/"
                 rel="noreferrer"
                 target="_blank"
@@ -47,7 +166,7 @@ exports[`Default layout page matches snapshot 1`] = `
             >
               <li>
                 <a
-                  class="block px-3 py-1 text-sm font-semibold text-blueGray-600 hover:text-blueGray-800"
+                  class="block px-3 py-1 text-sm font-semibold text-gray-600 hover:text-gray-800"
                   href="https://github.com/PR-Developers/server-health-monitor/"
                   rel="noreferrer"
                   target="_blank"

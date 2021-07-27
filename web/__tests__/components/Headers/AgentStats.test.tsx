@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react';
 
-import AgentStats from '../../../components/Headers/AgentStats';
+import AgentStatsHeader from '../../../components/Headers/AgentStats';
 
 test('AgentStats component matches snapshot', () => {
-  const { asFragment } = render(<AgentStats />);
+  const { asFragment } = render(<AgentStatsHeader inactive={0} active={1} />);
   expect(asFragment()).toMatchSnapshot();
 });

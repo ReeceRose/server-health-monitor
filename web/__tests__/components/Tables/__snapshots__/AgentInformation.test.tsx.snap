@@ -12,12 +12,12 @@ exports[`AgentInformation component matches snapshot 1`] = `
         class="flex flex-wrap items-center"
       >
         <div
-          class="relative flex-1 flex-grow w-full max-w-full px-4"
+          class="relative flex-1 flex-grow w-full max-w-full px-2"
         >
           <h3
             class="font-semibold text-lg text-white"
           >
-            Agents
+            Servers
           </h3>
         </div>
       </div>
@@ -33,7 +33,7 @@ exports[`AgentInformation component matches snapshot 1`] = `
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-gray-600 text-gray-200 border-gray-500"
             >
-              Agent ID
+              Hostname
             </th>
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-gray-600 text-gray-200 border-gray-500"
@@ -53,7 +53,7 @@ exports[`AgentInformation component matches snapshot 1`] = `
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-gray-600 text-gray-200 border-gray-500"
             >
-              Online
+              Status
             </th>
           </tr>
         </thead>
@@ -65,7 +65,7 @@ exports[`AgentInformation component matches snapshot 1`] = `
               <span
                 class="text-white"
               >
-                123-123-123123-123
+                Test Machine
               </span>
             </th>
             <td
@@ -74,7 +74,7 @@ exports[`AgentInformation component matches snapshot 1`] = `
               <span
                 class="text-white"
               >
-                Mac OS
+                ubunut
               </span>
             </td>
             <td
@@ -83,21 +83,23 @@ exports[`AgentInformation component matches snapshot 1`] = `
               <span
                 class="text-white"
               >
-                Linux
+                linux
               </span>
             </td>
             <td
               class="p-4 px-6 text-xs align-middle border-t-0 border-l-0 border-r-0 whitespace-nowrap"
             >
-              2020/12/31
+              TODO
             </td>
             <td
               class="p-4 px-6 text-xs align-middle border-t-0 border-l-0 border-r-0 whitespace-nowrap"
             >
-              <i
-                class="mr-2 text-green-400 fas fa-circle"
-              />
-               online
+              <span>
+                <i
+                  class="mr-2 text-green-400 fas fa-circle"
+                />
+                 Online
+              </span>
             </td>
           </tr>
         </tbody>

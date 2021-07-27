@@ -1,4 +1,11 @@
-export default function CardTable(): JSX.Element {
+import { Host } from '../../interfaces/Index';
+
+type Props = {
+  online: boolean;
+  host: Host;
+};
+
+const AgentInformation: React.FC<Props> = ({ online, host }) => {
   return (
     <div
       className={
@@ -7,8 +14,8 @@ export default function CardTable(): JSX.Element {
     >
       <div className="px-4 py-3 mb-0 border-0 rounded-t">
         <div className="flex flex-wrap items-center">
-          <div className="relative flex-1 flex-grow w-full max-w-full px-4">
-            <h3 className={'font-semibold text-lg text-white'}>Agents</h3>
+          <div className="relative flex-1 flex-grow w-full max-w-full px-2">
+            <h3 className={'font-semibold text-lg text-white'}>Servers</h3>
           </div>
         </div>
       </div>
@@ -21,7 +28,7 @@ export default function CardTable(): JSX.Element {
                   'px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-gray-600 text-gray-200 border-gray-500'
                 }
               >
-                Agent ID
+                Hostname
               </th>
               <th
                 className={
@@ -49,26 +56,34 @@ export default function CardTable(): JSX.Element {
                   'px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-gray-600 text-gray-200 border-gray-500'
                 }
               >
-                Online
+                Status
               </th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <th className="flex items-center p-4 px-6 text-xs text-left align-middle border-t-0 border-l-0 border-r-0 whitespace-nowrap">
-                <span className="text-white">123-123-123123-123</span>
+                <span className="text-white">{host.hostname}</span>
               </th>
               <td className="p-4 px-6 text-xs align-middle border-t-0 border-l-0 border-r-0 whitespace-nowrap">
-                <span className="text-white">Mac OS</span>
+                <span className="text-white">{host.os}</span>
               </td>
               <td className="p-4 px-6 text-xs align-middle border-t-0 border-l-0 border-r-0 whitespace-nowrap">
-                <span className="text-white">Linux</span>
+                <span className="text-white">{host.platform}</span>
               </td>
               <td className="p-4 px-6 text-xs align-middle border-t-0 border-l-0 border-r-0 whitespace-nowrap">
-                2020/12/31
+                TODO
               </td>
               <td className="p-4 px-6 text-xs align-middle border-t-0 border-l-0 border-r-0 whitespace-nowrap">
-                <i className="mr-2 text-green-400 fas fa-circle"></i> online
+                {online ? (
+                  <span>
+                    <i className="mr-2 text-green-400 fas fa-circle"></i> Online
+                  </span>
+                ) : (
+                  <span>
+                    <i className="mr-2 text-red-400 fas fa-circle"></i> Offline
+                  </span>
+                )}
               </td>
             </tr>
           </tbody>
@@ -76,4 +91,6 @@ export default function CardTable(): JSX.Element {
       </div>
     </div>
   );
-}
+};
+
+export default AgentInformation;

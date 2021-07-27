@@ -1,6 +1,12 @@
+import React from 'react';
 import AgentStats from '../Cards/AgentStats';
 
-export default function AgentStatus(): JSX.Element {
+type Props = {
+  active: number;
+  inactive: number;
+};
+
+const AgentStatsHeader: React.FC<Props> = ({ active, inactive }) => {
   return (
     <div className="relative pt-12 pb-32 bg-gray-800 md:pt-32">
       <div className="w-full px-4 mx-auto md:px-10">
@@ -9,14 +15,14 @@ export default function AgentStatus(): JSX.Element {
             <div className="w-full px-4 lg:w-6/12 xl:w-3/12">
               <AgentStats
                 subtitle="ACTIVE SERVERS"
-                title="2"
+                title={active.toString()}
                 iconColour="bg-green-400"
               />
             </div>
             <div className="w-full px-4 lg:w-6/12 xl:w-3/12">
               <AgentStats
                 subtitle="INACTIVE SERVERS"
-                title="2"
+                title={inactive.toString()}
                 iconColour="bg-red-400"
               />
             </div>
@@ -25,4 +31,6 @@ export default function AgentStatus(): JSX.Element {
       </div>
     </div>
   );
-}
+};
+
+export default AgentStatsHeader;

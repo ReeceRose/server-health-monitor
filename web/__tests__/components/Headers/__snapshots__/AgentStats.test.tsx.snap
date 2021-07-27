@@ -35,7 +35,7 @@ exports[`AgentStats component matches snapshot 1`] = `
                     <span
                       class="text-xl font-semibold text-gray-700"
                     >
-                      2
+                      1
                     </span>
                   </div>
                   <div
@@ -76,7 +76,7 @@ exports[`AgentStats component matches snapshot 1`] = `
                     <span
                       class="text-xl font-semibold text-gray-700"
                     >
-                      2
+                      0
                     </span>
                   </div>
                   <div

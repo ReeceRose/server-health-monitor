@@ -4,7 +4,7 @@ type Props = {
   iconColour: string;
 };
 
-const AgentStats: React.FC<Props> = ({ title, subtitle, iconColour }) => {
+const AgentStatsCard: React.FC<Props> = ({ title, subtitle, iconColour }) => {
   return (
     <div className="relative flex flex-col min-w-0 mb-6 break-words bg-white rounded shadow-lg xl:mb-0">
       <div className="flex-auto p-4">
@@ -31,4 +31,4 @@ const AgentStats: React.FC<Props> = ({ title, subtitle, iconColour }) => {
   );
 };
 
-export default AgentStats;
+export default AgentStatsCard;

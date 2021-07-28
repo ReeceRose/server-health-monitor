@@ -11,7 +11,7 @@ import (
 type IHealthRepository interface {
 	Find(query interface{}) ([]types.Health, error)
 	// FindOne(where ...interface{}) (types.Health, error)
-	Insert(*types.Health) (string, error)
+	Insert(data *types.Health) (string, error)
 	// Update(value interface{}) ([]types.Health, error)
 	// Delete(value interface{}) (types.Health, error)
 }
@@ -19,8 +19,8 @@ type IHealthRepository interface {
 // IHostRepository is an interface which provides method signatures for a host repository
 type IHostRepository interface {
 	Find(query interface{}) ([]types.Host, error)
-	Insert(*types.Host) (string, error)
-	FindOneAndUpdate(*types.Host) error
+	Insert(data *types.Host) (string, error)
+	FindOneAndUpdate(data *types.Host) error
 }
 
 type baseRepository struct {

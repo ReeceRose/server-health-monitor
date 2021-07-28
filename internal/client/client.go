@@ -17,8 +17,8 @@ import (
 
 // Client is an interface which provides method signatures for a HTTP client
 type Client interface {
-	Get(string) ([]byte, int, error)
-	Post(string, io.Reader) ([]byte, int, error)
+	Get(url string) ([]byte, int, error)
+	Post(url string, data io.Reader) ([]byte, int, error)
 }
 
 type standardClient struct {

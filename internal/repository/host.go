@@ -8,7 +8,6 @@ import (
 	"github.com/PR-Developers/server-health-monitor/internal/logger"
 	"github.com/PR-Developers/server-health-monitor/internal/types"
 	"github.com/PR-Developers/server-health-monitor/internal/utils"
-	"github.com/labstack/gommon/log"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -69,7 +68,6 @@ func (r *hostRepository) Insert(data *types.Host) (string, error) {
 
 // Replace an existing host record in the database
 func (r *hostRepository) FindOneAndUpdate(data *types.Host) error {
-	log.Info(data)
 	_, err := r.collection.UpdateByID(r.db.Context(), data.ID,
 		bson.M{
 			"$set": data,

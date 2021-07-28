@@ -12,12 +12,12 @@ import (
 
 // Logger is an interface which provides method signatures for logging to files/console
 type Logger interface {
-	Info(string)
-	Infof(string, ...interface{})
-	Warning(string)
-	Warningf(string, ...interface{})
-	Error(string)
-	Errorf(string, ...interface{})
+	Info(msg string)
+	Infof(msg string, args ...interface{})
+	Warning(msg string)
+	Warningf(msg string, args ...interface{})
+	Error(msg string)
+	Errorf(msg string, args ...interface{})
 	Logger() *log.Logger
 }
 

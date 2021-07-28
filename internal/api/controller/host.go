@@ -35,7 +35,7 @@ func (controller *HostController) GetHostById(c echo.Context) error {
 	return c.JSON(res.StatusCode, res)
 }
 
-// PostHost adds host data or reinserts existing host
+// PostHost adds host data or updates existing host
 func (controller *HostController) PostHost(c echo.Context) error {
 	host := new(types.Host)
 

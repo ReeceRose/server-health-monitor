@@ -201,9 +201,9 @@ exports[`Index page matches snapshot 1`] = `
                   >
                     <span>
                       <i
-                        class="mr-2 text-green-400 fas fa-circle"
+                        class="mr-2 text-red-400 fas fa-circle"
                       />
-                       Online
+                       Offline
                     </span>
                   </td>
                 </tr>

@@ -33,6 +33,8 @@ const (
 
 	// Constant collection names
 
-	// COLLECTION_HEALTH is the collection name used for health collection
+	// COLLECTION_HEALTH is the collection name used for the health collection
 	COLLECTION_HEALTH = "health"
+	// COLLECTION_HOST is the collection name used for the host collection
+	COLLECTION_HOST = "host"
 )

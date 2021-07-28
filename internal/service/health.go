@@ -54,7 +54,7 @@ func (s *healthService) GetHealth(requestID string) types.StandardResponse {
 
 // GetHealthByAgentID returns all health data for a given agent
 func (s *healthService) GetHealthByAgentID(requestID, agentID string) types.StandardResponse {
-	s.log.Info(fmt.Sprintf("attemping to get health data for agent: %s - Request ID: %s", agentID, requestID))
+	s.log.Infof("attemping to get health data for agent: %s - Request ID: %s", agentID, requestID)
 
 	data, err := s.healthRepository.Find(bson.M{"agentID": agentID})
 	if err != nil {
@@ -66,7 +66,7 @@ func (s *healthService) GetHealthByAgentID(requestID, agentID string) types.Stan
 		}
 	}
 
-	s.log.Info(fmt.Sprintf("successfully got health data for agent: %s - Request ID: %s", agentID, requestID))
+	s.log.Infof("successfully got health data for agent: %s - Request ID: %s", agentID, requestID)
 
 	return types.StandardResponse{
 		Data:       data,
@@ -77,13 +77,12 @@ func (s *healthService) GetHealthByAgentID(requestID, agentID string) types.Stan
 
 // AddHealth inserts new health data for a given agent
 func (s *healthService) AddHealth(requestID string, agentID string, data *types.Health) types.StandardResponse {
-	s.log.Info(fmt.Sprintf("attemping to insert health data for agent: %s - Request ID: %s", agentID, requestID))
+	s.log.Infof("attemping to insert health data for agent: %s - Request ID: %s", agentID, requestID)
 
 	data.AgentID = agentID
 	data.ID = primitive.NewObjectID()
 	now := time.Now().UTC().UnixNano()
 	data.CreateTime = now
-	data.UpdateTime = now
 
 	_, err := s.healthRepository.Insert(data)
 
@@ -96,7 +95,7 @@ func (s *healthService) AddHealth(requestID string, agentID string, data *types.
 		}
 	}
 
-	s.log.Info(fmt.Sprintf("successfully inserted health data for agent: %s - Request ID: %s", agentID, requestID))
+	s.log.Infof("successfully inserted health data for agent: %s - Request ID: %s", agentID, requestID)
 
 	return types.StandardResponse{
 		Data:       data,

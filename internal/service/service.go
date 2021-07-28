@@ -8,3 +8,10 @@ type IHealthService interface {
 	GetHealthByAgentID(requestID, agentID string) types.StandardResponse
 	AddHealth(requestID string, agentID string, data *types.Health) types.StandardResponse
 }
+
+// IHostService is an interface which provides method signatures for a host service
+type IHostService interface {
+	GetHosts(requestID string) types.StandardResponse
+	GetHostByID(requestID, agentID string) types.StandardResponse
+	AddHost(requestID string, agentID string, data *types.Host) types.StandardResponse
+}

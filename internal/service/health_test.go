@@ -23,22 +23,14 @@ type testServiceHelper struct {
 var (
 	healthData []types.Health = []types.Health{
 		{
-			AgentID: "1",
-			Host: types.Host{
-				Hostname: "test",
-				Platform: "ubuntu",
-				OS:       "linux",
-			},
+			AgentID:    "1",
 			CreateTime: 1,
+			Uptime:     10,
 		},
 		{
-			AgentID: "2",
-			Host: types.Host{
-				Hostname: "test",
-				Platform: "ubuntu",
-				OS:       "linux",
-			},
+			AgentID:    "2",
 			CreateTime: 2,
+			Uptime:     20,
 		},
 	}
 )
@@ -65,10 +57,9 @@ func TestHealth_GetHealth_ReturnsExpectedHealthData(t *testing.T) {
 
 	assert.Equal(t, 2, len(data))
 	assert.Equal(t, int64(1), data[0].CreateTime)
-	assert.Equal(t, "test", data[0].Host.Hostname)
-	assert.Equal(t, "ubuntu", data[0].Host.Platform)
-	assert.Equal(t, "linux", data[0].Host.OS)
+	assert.Equal(t, uint64(10), data[0].Uptime)
 	assert.Equal(t, int64(2), data[1].CreateTime)
+	assert.Equal(t, uint64(20), data[1].Uptime)
 
 	helper.mock.AssertExpectations(t)
 }

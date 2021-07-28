@@ -16,6 +16,13 @@ type IHealthRepository interface {
 	// Delete(value interface{}) (types.Health, error)
 }
 
+// IHostRepository is an interface which provides method signatures for a host repository
+type IHostRepository interface {
+	Find(query interface{}) ([]types.Host, error)
+	Insert(*types.Host) (string, error)
+	FindOneAndUpdate(*types.Host) error
+}
+
 type baseRepository struct {
 	db             database.Database
 	collection     *mongo.Collection

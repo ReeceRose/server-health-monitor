@@ -1,11 +1,10 @@
 import { Host } from '../../interfaces/Index';
 
 type Props = {
-  online: boolean;
   host: Host;
 };
 
-const AgentInformation: React.FC<Props> = ({ online, host }) => {
+const AgentInformation: React.FC<Props> = ({ host }) => {
   return (
     <div
       className={
@@ -75,7 +74,7 @@ const AgentInformation: React.FC<Props> = ({ online, host }) => {
                 TODO
               </td>
               <td className="p-4 px-6 text-xs align-middle border-t-0 border-l-0 border-r-0 whitespace-nowrap">
-                {online ? (
+                {host.online || false ? (
                   <span>
                     <i className="mr-2 text-green-400 fas fa-circle"></i> Online
                   </span>

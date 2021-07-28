@@ -21,14 +21,12 @@ export interface Host {
   virtualizationSystem?: string;
   virtualizationRole?: string;
   hostID?: string;
-  // TODO: add this to backend
   online?: boolean;
 }
 
 export interface Health {
   id: string;
   agentID: string;
-  host: Host;
   createTime: number;
   updateTime: number;
   online?: boolean;
@@ -36,4 +34,8 @@ export interface Health {
 
 export interface HealthResponse extends StandardResponse {
   Data: Health[];
+}
+
+export interface HostResponse extends StandardResponse {
+  Data: Host[];
 }

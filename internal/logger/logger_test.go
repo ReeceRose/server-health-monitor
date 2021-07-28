@@ -20,7 +20,6 @@ func resetLogger() {
 	logger = nil
 
 	osWrapper = &wrapper.DefaultOS{}
-	osWrapper.WriteFile(utils.GetVariable(consts.LOG_FILE), nil, 066)
 }
 
 func TestLogger_Instance_InitializesLogger(t *testing.T) {

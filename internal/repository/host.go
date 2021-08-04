@@ -67,7 +67,7 @@ func (r *hostRepository) Insert(data *types.Host) (string, error) {
 }
 
 // Replace an existing host record in the database
-func (r *hostRepository) FindOneAndUpdate(data *types.Host) error {
+func (r *hostRepository) UpdateByID(data *types.Host) error {
 	_, err := r.collection.UpdateByID(r.db.Context(), data.ID,
 		bson.M{
 			"$set": data,

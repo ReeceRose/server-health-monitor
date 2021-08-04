@@ -12,9 +12,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-//go:generate mockery --dir=../../ -r --name IHealthRepository
+//go:generate mockery --dir=../ -r --name IHealthRepository
 
-type testServiceHelper struct {
+type testHealthServiceHelper struct {
 	service IHealthService
 	repo    repository.IHealthRepository
 	mock    *mock.Mock
@@ -35,12 +35,12 @@ var (
 	}
 )
 
-func getInitializedHealthService() testServiceHelper {
+func getInitializedHealthService() testHealthServiceHelper {
 	repo := new(mocks.IHealthRepository)
 	// repo.On
 	service := NewHealthService(repo)
 
-	return testServiceHelper{
+	return testHealthServiceHelper{
 		service: service,
 		repo:    repo,
 		mock:    &repo.Mock,
@@ -70,7 +70,7 @@ func TestHealth_GetHealth_HandlesError(t *testing.T) {
 
 	response := helper.service.GetHealth("1")
 
-	assert.Nil(t, response.Data)
+	assert.Equal(t, response.Data, []types.Health{})
 	assert.Equal(t, 500, response.StatusCode)
 	assert.Equal(t, "failed to get all health data - Request ID: 1", response.Error)
 	assert.False(t, response.Success)
@@ -97,7 +97,7 @@ func TestHealth_GetHealthByAgentId_HandlesError(t *testing.T) {
 
 	response := helper.service.GetHealthByAgentID("1", "4")
 
-	assert.Nil(t, response.Data)
+	assert.Equal(t, response.Data, []types.Health{})
 	assert.Equal(t, 500, response.StatusCode)
 	assert.Equal(t, "failed to get data for agent: 4 - Request ID: 1", response.Error)
 	assert.False(t, response.Success)
@@ -125,8 +125,7 @@ func TestHealth_AddHealth_HandlesError(t *testing.T) {
 
 	response := helper.service.AddHealth("1", "2", &healthData[1])
 
-	assert.Nil(t, response.Data)
-	assert.Equal(t, 500, response.StatusCode)
+	assert.Equal(t, response.Data, []types.Health{})
 	assert.Equal(t, "failed to insert data for agent: 2 - Request ID 1", response.Error)
 	assert.False(t, response.Success)
 

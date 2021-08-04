@@ -20,7 +20,7 @@ type IHealthRepository interface {
 type IHostRepository interface {
 	Find(query interface{}) ([]types.Host, error)
 	Insert(data *types.Host) (string, error)
-	FindOneAndUpdate(data *types.Host) error
+	UpdateByID(data *types.Host) error
 }
 
 type baseRepository struct {

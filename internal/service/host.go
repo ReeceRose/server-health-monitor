@@ -8,6 +8,7 @@ import (
 	"github.com/PR-Developers/server-health-monitor/internal/logger"
 	"github.com/PR-Developers/server-health-monitor/internal/repository"
 	"github.com/PR-Developers/server-health-monitor/internal/types"
+	"github.com/PR-Developers/server-health-monitor/internal/utils"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -40,7 +41,7 @@ func (s *hostService) GetHosts(requestID string) types.StandardResponse {
 		return types.StandardResponse{
 			Error:      "failed to get all hosts data - Request ID: " + requestID,
 			StatusCode: http.StatusInternalServerError,
-			Data:       nil,
+			Data:       []types.Host{},
 			Success:    false,
 		}
 	}
@@ -67,7 +68,7 @@ func (s *hostService) GetHostByID(requestID, agentID string) types.StandardRespo
 		return types.StandardResponse{
 			Error:      fmt.Sprintf("failed to get host data for agent: %s - Request ID: %s", agentID, requestID),
 			StatusCode: http.StatusInternalServerError,
-			Data:       nil,
+			Data:       []types.Host{},
 			Success:    false,
 		}
 	}
@@ -76,7 +77,7 @@ func (s *hostService) GetHostByID(requestID, agentID string) types.StandardRespo
 		return types.StandardResponse{
 			Error:      fmt.Sprintf("failed to get host data for agent: %s - Request ID: %s", agentID, requestID),
 			StatusCode: http.StatusNoContent,
-			Data:       nil,
+			Data:       []types.Host{},
 			Success:    false,
 		}
 	}
@@ -96,21 +97,20 @@ func (s *hostService) GetHostByID(requestID, agentID string) types.StandardRespo
 func (s *hostService) AddHost(requestID string, agentID string, data *types.Host) types.StandardResponse {
 	s.log.Infof("attemping to insert host data for agent: %s - Request ID: %s", agentID, requestID)
 
-	now := time.Now().UTC().UnixNano()
+	now := time.Now().UTC().Unix()
 	data.AgentID = agentID
 	data.UpdateTime = now
-
 	res := s.GetHostByID(requestID, agentID)
 	if original := res.Data.([]types.Host); len(original) >= 1 {
 		data.ID = original[0].ID
 		data.CreateTime = original[0].CreateTime
-		err := s.hostRepository.FindOneAndUpdate(data)
+		err := s.hostRepository.UpdateByID(data)
 
 		if err != nil {
 			return types.StandardResponse{
 				Error:      fmt.Sprintf("failed to update data for agent: %s - Request ID %s", agentID, requestID),
 				StatusCode: http.StatusInternalServerError,
-				Data:       nil,
+				Data:       []types.Host{},
 				Success:    false,
 			}
 		}
@@ -126,7 +126,7 @@ func (s *hostService) AddHost(requestID string, agentID string, data *types.Host
 			return types.StandardResponse{
 				Error:      fmt.Sprintf("failed to insert data for agent: %s - Request ID %s", agentID, requestID),
 				StatusCode: http.StatusInternalServerError,
-				Data:       nil,
+				Data:       []types.Host{},
 				Success:    false,
 			}
 		}
@@ -146,7 +146,7 @@ func (s *hostService) isHostOnline(host *types.Host) bool {
 		"agentID": bson.M{"$eq": host.AgentID},
 		"$and": []bson.M{
 			{
-				"createTime": bson.M{"$gt": time.Now().UTC().Add(-time.Minute * 2).UnixNano()}, //TODO: read from config
+				"createTime": bson.M{"$gt": utils.GetMinimumLastHealthPacketTime(time.Now())},
 			},
 		},
 	})

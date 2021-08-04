@@ -38,7 +38,7 @@ func (s *healthService) GetHealth(requestID string) types.StandardResponse {
 		return types.StandardResponse{
 			Error:      "failed to get all health data - Request ID: " + requestID,
 			StatusCode: http.StatusInternalServerError,
-			Data:       nil,
+			Data:       []types.Health{},
 			Success:    false,
 		}
 	}
@@ -61,7 +61,7 @@ func (s *healthService) GetHealthByAgentID(requestID, agentID string) types.Stan
 		return types.StandardResponse{
 			Error:      fmt.Sprintf("failed to get data for agent: %s - Request ID: %s", agentID, requestID),
 			StatusCode: http.StatusInternalServerError,
-			Data:       nil,
+			Data:       []types.Health{},
 			Success:    false,
 		}
 	}
@@ -81,7 +81,7 @@ func (s *healthService) AddHealth(requestID string, agentID string, data *types.
 
 	data.AgentID = agentID
 	data.ID = primitive.NewObjectID()
-	now := time.Now().UTC().UnixNano()
+	now := time.Now().UTC().Unix()
 	data.CreateTime = now
 
 	_, err := s.healthRepository.Insert(data)
@@ -90,7 +90,7 @@ func (s *healthService) AddHealth(requestID string, agentID string, data *types.
 		return types.StandardResponse{
 			Error:      fmt.Sprintf("failed to insert data for agent: %s - Request ID %s", agentID, requestID),
 			StatusCode: http.StatusInternalServerError,
-			Data:       nil,
+			Data:       []types.Health{},
 			Success:    false,
 		}
 	}

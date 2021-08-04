@@ -30,7 +30,8 @@ func (controller *HostController) GetHosts(c echo.Context) error {
 // GetHostById returns information about the host
 func (controller *HostController) GetHostById(c echo.Context) error {
 	res := controller.service.GetHostByID(
-		c.Response().Header().Get("X-Request-ID"), c.Param("agent-id"),
+		c.Response().Header().Get("X-Request-ID"),
+		c.Param("agent-id"),
 	)
 	return c.JSON(res.StatusCode, res)
 }

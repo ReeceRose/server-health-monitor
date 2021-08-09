@@ -35,7 +35,7 @@ exports[`Index page matches snapshot 1`] = `
                     <span
                       class="text-xl font-semibold text-gray-700"
                     >
-                      1
+                      0
                     </span>
                   </div>
                   <div
@@ -76,7 +76,7 @@ exports[`Index page matches snapshot 1`] = `
                     <span
                       class="text-xl font-semibold text-gray-700"
                     >
-                      0
+                      1
                     </span>
                   </div>
                   <div

@@ -54,6 +54,8 @@ func getDefaultForKey(key string) string {
 		return "admin"
 	case consts.LOG_FILE:
 		return "server-health-monitor.log"
+	case consts.HEALTH_DELAY:
+		return "2"
 	}
 	return ""
 }

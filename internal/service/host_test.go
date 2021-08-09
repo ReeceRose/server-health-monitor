@@ -52,7 +52,7 @@ func getInitializedHostService() testHostServiceHelper {
 	healthMock := &healthRepo.Mock
 	healthMock.On("Find", mock.Anything).Return([]types.Health{
 		{
-			CreateTime: time.Now().Add(-time.Hour).Unix(),
+			CreateTime: time.Now().Add(-time.Hour).UnixNano(),
 		},
 	}, nil)
 
@@ -204,7 +204,7 @@ func TestHost_IsHostOnline_HostIsOnline(t *testing.T) {
 
 	helper.healthMock.On("Find", mock.Anything).Return([]types.Health{
 		{
-			CreateTime: time.Now().Unix(),
+			CreateTime: time.Now().UnixNano(),
 		},
 	}, nil)
 

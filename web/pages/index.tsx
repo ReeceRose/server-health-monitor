@@ -18,12 +18,15 @@ const Index: NextPage<Props> = ({ hosts, error }) => {
 
   return (
     <>
-      <AgentStats active={1} inactive={0} />
+      <AgentStats
+        active={hosts.filter((h) => h.online).length}
+        inactive={hosts.filter((h) => !h.online).length}
+      />
       <div className="flex-grow w-full px-4 mx-auto mb-0 -m-24 md:px-10">
         <div className="flex flex-wrap">
           <div className="w-full px-4 mb-12 xl:mb-0">
             {hosts.map((host) => (
-              <AgentInformation key={host.hostID} host={host} />
+              <AgentInformation key={host.hostname} host={host} />
             ))}
           </div>
         </div>

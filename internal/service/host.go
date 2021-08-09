@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/PR-Developers/server-health-monitor/internal/logger"
@@ -97,7 +98,7 @@ func (s *hostService) GetHostByID(requestID, agentID string) types.StandardRespo
 func (s *hostService) AddHost(requestID string, agentID string, data *types.Host) types.StandardResponse {
 	s.log.Infof("attemping to insert host data for agent: %s - Request ID: %s", agentID, requestID)
 
-	now := time.Now().UTC().Unix()
+	now := time.Now().UTC().UnixNano()
 	data.AgentID = agentID
 	data.UpdateTime = now
 	res := s.GetHostByID(requestID, agentID)
@@ -151,7 +152,10 @@ func (s *hostService) isHostOnline(host *types.Host) bool {
 		},
 	})
 	if err != nil {
+		logger.Instance().Info(err.Error())
 		return false
 	}
+	logger.Instance().Info(strconv.Itoa(len(res)))
+
 	return len(res) >= 1
 }

@@ -81,7 +81,7 @@ func (s *healthService) AddHealth(requestID string, agentID string, data *types.
 
 	data.AgentID = agentID
 	data.ID = primitive.NewObjectID()
-	now := time.Now().UTC().Unix()
+	now := time.Now().UTC().UnixNano()
 	data.CreateTime = now
 
 	_, err := s.healthRepository.Insert(data)

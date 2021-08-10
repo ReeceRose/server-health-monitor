@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"time"
+
 	"github.com/PR-Developers/server-health-monitor/internal/repository"
 	"github.com/PR-Developers/server-health-monitor/internal/service"
 	"github.com/PR-Developers/server-health-monitor/internal/types"
@@ -28,6 +30,26 @@ func (controller *HealthController) GetHealth(c echo.Context) error {
 		c.Response().Header().Get("X-Request-ID"),
 	)
 	return c.JSON(res.StatusCode, res)
+}
+
+// GetHealthWS returns all health data via websockets
+func (controller *HealthController) GetHealthWS(c echo.Context) error {
+	// res := controller.service.GetHealth(
+	// 	c.Response().Header().Get("X-Request-ID"),
+	// )
+	// return c.JSON(res.StatusCode, res)
+	websocket.Handler(func(ws *websocket.Conn) {
+		defer ws.Close()
+		for {
+			// Write
+			err := websocket.Message.Send(ws, "Hello, Client!")
+			if err != nil {
+				c.Logger().Error(err)
+			}
+			time.Sleep(time.Second * 20)
+		}
+	}).ServeHTTP(c.Response(), c.Request())
+	return nil
 }
 
 // GetHealthByAgentId returns all health data for an agent

@@ -153,7 +153,7 @@ exports[`Index page matches snapshot 1`] = `
                   <th
                     class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-gray-600 text-gray-200 border-gray-500"
                   >
-                    Last Ping
+                    Last Connected
                   </th>
                   <th
                     class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-gray-600 text-gray-200 border-gray-500"
@@ -194,7 +194,7 @@ exports[`Index page matches snapshot 1`] = `
                   <td
                     class="p-4 px-6 text-xs align-middle border-t-0 border-l-0 border-r-0 whitespace-nowrap"
                   >
-                    TODO
+                    Unknown
                   </td>
                   <td
                     class="p-4 px-6 text-xs align-middle border-t-0 border-l-0 border-r-0 whitespace-nowrap"

@@ -21,6 +21,7 @@ export interface Host {
   virtualizationSystem?: string;
   virtualizationRole?: string;
   hostID?: string;
+  agentID?: string;
   online?: boolean;
   lastConnected?: number;
 }

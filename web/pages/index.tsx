@@ -18,7 +18,6 @@ const Index: NextPage<Props> = ({ hosts, error }) => {
   }
 
   const [health, setHealth] = useState([]);
-  // const ws = useRef(WebSocket);
 
   useEffect(() => {
     const ws = new WebSocket('wss://localhost:3000/ws/v1/health/');
@@ -30,11 +29,10 @@ const Index: NextPage<Props> = ({ hosts, error }) => {
       // TODO: refactor this
       parsed_data.Data.forEach((data: Health) => {
         hosts?.forEach((host) => {
-          if (host.hostID == data.agentID) {
+          if (host.agentID == data.agentID) {
             console.log('found match');
             if (data.createTime > (host.lastConnected || 0)) {
               host.lastConnected = data.createTime;
-              console.log('host updated');
             }
             return;
           }

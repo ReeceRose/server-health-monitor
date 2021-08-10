@@ -71,7 +71,11 @@ const AgentInformation: React.FC<Props> = ({ host }) => {
                 <span className="text-white">{host.platform}</span>
               </td>
               <td className="p-4 px-6 text-xs align-middle border-t-0 border-l-0 border-r-0 whitespace-nowrap">
-                {host.lastConnected || 'Unknown'}
+                {host.lastConnected
+                  ? new Date(
+                      parseInt(host.lastConnected.toString().substr(0, 13))
+                    ).toLocaleString()
+                  : 'Unknown'}
               </td>
               <td className="p-4 px-6 text-xs align-middle border-t-0 border-l-0 border-r-0 whitespace-nowrap">
                 {host.online || false ? (

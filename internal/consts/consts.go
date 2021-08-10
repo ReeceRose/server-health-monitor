@@ -27,6 +27,8 @@ const (
 	LOG_FILE = "LOG_FILE"
 	// HEALTH_DELAY is a key used to lookup the minimum delay since last health reported (in minutes) to show server as offline (Used by: api)
 	HEALTH_DELAY = "HEALTH_DELAY"
+	// DATA_WEBSOCKET_DELAY is a key used to lookup the delay (in seconds) between sending more data via websockets (Used by: api)
+	DATA_WEBSOCKET_DELAY = "DATA_WEBSOCKET_DELAY"
 	// Constant filenames
 
 	// AGENT_STORE_FILENAME is the file location of agent filestore (Used by: data-collector)

@@ -56,6 +56,8 @@ func getDefaultForKey(key string) string {
 		return "server-health-monitor.log"
 	case consts.HEALTH_DELAY:
 		return "2"
+	case consts.DATA_WEBSOCKET_DELAY:
+		return "30"
 	}
 	return ""
 }

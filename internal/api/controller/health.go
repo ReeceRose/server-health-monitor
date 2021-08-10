@@ -1,12 +1,17 @@
 package controller
 
 import (
+	"strconv"
 	"time"
 
+	"github.com/PR-Developers/server-health-monitor/internal/consts"
+	"github.com/PR-Developers/server-health-monitor/internal/logger"
 	"github.com/PR-Developers/server-health-monitor/internal/repository"
 	"github.com/PR-Developers/server-health-monitor/internal/service"
 	"github.com/PR-Developers/server-health-monitor/internal/types"
+	"github.com/PR-Developers/server-health-monitor/internal/utils"
 	"github.com/labstack/echo/v4"
+	"golang.org/x/net/websocket"
 )
 
 // HealthController provides a health service to interact with
@@ -34,19 +39,24 @@ func (controller *HealthController) GetHealth(c echo.Context) error {
 
 // GetHealthWS returns all health data via websockets
 func (controller *HealthController) GetHealthWS(c echo.Context) error {
-	// res := controller.service.GetHealth(
-	// 	c.Response().Header().Get("X-Request-ID"),
-	// )
-	// return c.JSON(res.StatusCode, res)
+	ws_delay := utils.GetVariable(consts.DATA_WEBSOCKET_DELAY)
+	delay, err := strconv.Atoi(ws_delay)
+	if err != nil {
+		delay = 30
+	}
+
+	log := logger.Instance()
+	requestID := c.Response().Header().Get("X-Request-ID")
+
 	websocket.Handler(func(ws *websocket.Conn) {
 		defer ws.Close()
 		for {
-			// Write
-			err := websocket.Message.Send(ws, "Hello, Client!")
+			websocket.JSON.Send(ws, controller.service.GetHealth(requestID))
 			if err != nil {
-				c.Logger().Error(err)
+				log.Error("failed to send websocket data for request: " + requestID)
 			}
-			time.Sleep(time.Second * 20)
+
+			time.Sleep(time.Second * time.Duration(delay))
 		}
 	}).ServeHTTP(c.Response(), c.Request())
 	return nil

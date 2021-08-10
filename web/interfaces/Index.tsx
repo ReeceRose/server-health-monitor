@@ -22,6 +22,7 @@ export interface Host {
   virtualizationRole?: string;
   hostID?: string;
   online?: boolean;
+  lastConnected?: number;
 }
 
 export interface Health {

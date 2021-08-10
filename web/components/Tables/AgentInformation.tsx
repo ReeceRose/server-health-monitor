@@ -48,7 +48,7 @@ const AgentInformation: React.FC<Props> = ({ host }) => {
                   'px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-gray-600 text-gray-200 border-gray-500'
                 }
               >
-                Last Ping
+                Last Connected
               </th>
               <th
                 className={
@@ -71,7 +71,7 @@ const AgentInformation: React.FC<Props> = ({ host }) => {
                 <span className="text-white">{host.platform}</span>
               </td>
               <td className="p-4 px-6 text-xs align-middle border-t-0 border-l-0 border-r-0 whitespace-nowrap">
-                TODO
+                {host.lastConnected || 'Unknown'}
               </td>
               <td className="p-4 px-6 text-xs align-middle border-t-0 border-l-0 border-r-0 whitespace-nowrap">
                 {host.online || false ? (

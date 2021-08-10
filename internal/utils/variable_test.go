@@ -26,6 +26,7 @@ func TestVariable_GetVariable_ReturnsValueFromEnvironmentVariable(t *testing.T) 
 	os.Setenv(consts.DB_PASS, "pass")
 	os.Setenv(consts.LOG_FILE, "shm.log")
 	os.Setenv(consts.HEALTH_DELAY, "5")
+	os.Setenv(consts.DATA_WEBSOCKET_DELAY, "120")
 
 	assert.Equal(t, "4000", GetVariable(consts.API_PORT))
 	assert.Equal(t, "https://api.pr-developers.com/api/v1", GetVariable(consts.API_URL))
@@ -39,6 +40,7 @@ func TestVariable_GetVariable_ReturnsValueFromEnvironmentVariable(t *testing.T) 
 	assert.Equal(t, "pass", GetVariable(consts.DB_PASS))
 	assert.Equal(t, "shm.log", GetVariable(consts.LOG_FILE))
 	assert.Equal(t, "5", GetVariable(consts.HEALTH_DELAY))
+	assert.Equal(t, "120", GetVariable(consts.DATA_WEBSOCKET_DELAY))
 
 	os.Clearenv()
 }
@@ -57,6 +59,7 @@ func TestVariable_GetVariable_ReturnsDefaultValues(t *testing.T) {
 	assert.Equal(t, "admin", GetVariable(consts.DB_PASS))
 	assert.Equal(t, "server-health-monitor.log", GetVariable(consts.LOG_FILE))
 	assert.Equal(t, "2", GetVariable(consts.HEALTH_DELAY))
+	assert.Equal(t, "30", GetVariable(consts.DATA_WEBSOCKET_DELAY))
 	assert.Equal(t, "", GetVariable("test-value"))
 }
 

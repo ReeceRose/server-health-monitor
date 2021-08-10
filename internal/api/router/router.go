@@ -25,5 +25,5 @@ func Setup(e *echo.Echo) {
 	e.POST("/api/v1/host/", func(c echo.Context) error { return host.PostHost(c) })
 
 	// Websockets
-	// e.GET("/ws/v1/health/", func(c echo.Context) error { return health.GetHealth() })
+	e.GET("/ws/v1/health/", func(c echo.Context) error { return health.GetHealthWS(c) })
 }

@@ -15,7 +15,7 @@ type HostController struct {
 // NewHostController returns a new HostController with the service/repository initialized
 func NewHostController() *HostController {
 	return &HostController{
-		service: service.NewHostService(repository.NewHostRepository(), repository.NewHealthRepository()),
+		service: service.NewHostService(repository.NewHostRepository(), service.NewHealthService(repository.NewHealthRepository())),
 	}
 }
 

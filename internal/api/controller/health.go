@@ -47,6 +47,7 @@ func (controller *HealthController) GetHealthWS(c echo.Context) error {
 
 	log := logger.Instance()
 	requestID := c.Response().Header().Get("X-Request-ID")
+	// now := time.Now().UTC().UnixNano()
 
 	websocket.Handler(func(ws *websocket.Conn) {
 		defer ws.Close()

@@ -13,14 +13,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-//go:generate mockery --dir=../ -r --name IHealthRepository
+//go:generate mockery --dir=../ -r --name IHealthService
 //go:generate mockery --dir=../ -r --name IHostRepository
 
 type testHostServiceHelper struct {
 	hostService   IHostService
 	healthService IHealthService
 	hostRepo      repository.IHostRepository
-	healthRepo    repository.IHealthRepository
 	mock          *mock.Mock
 	healthMock    *mock.Mock
 }
@@ -48,7 +47,7 @@ func getInitializedHostService() testHostServiceHelper {
 	hostRepo := new(mocks.IHostRepository)
 	healthRepo := new(mocks.IHealthRepository)
 	healthService := NewHealthService(healthRepo)
-	hostService := NewHostService(hostRepo, healthRepo)
+	hostService := NewHostService(hostRepo, healthService)
 	healthMock := &healthRepo.Mock
 	healthMock.On("Find", mock.Anything).Return([]types.Health{
 		{
@@ -60,7 +59,6 @@ func getInitializedHostService() testHostServiceHelper {
 		healthService: healthService,
 		hostService:   hostService,
 		hostRepo:      hostRepo,
-		healthRepo:    healthRepo,
 		mock:          &hostRepo.Mock,
 		healthMock:    healthMock,
 	}
@@ -208,7 +206,7 @@ func TestHost_IsHostOnline_HostIsOnline(t *testing.T) {
 		},
 	}, nil)
 
-	response := helper.hostService.isHostOnline(hostData[0].AgentID)
+	response := helper.hostService.isHostOnline("1", hostData[0].AgentID)
 
 	assert.True(t, response)
 
@@ -219,55 +217,10 @@ func TestHost_IsHostOnline_HostIsOnline(t *testing.T) {
 func TestHost_IsHostOnline_HostIsOffline(t *testing.T) {
 	helper := getInitializedHostService()
 
-	response := helper.hostService.isHostOnline(hostData[0].AgentID)
+	response := helper.hostService.isHostOnline("1", hostData[0].AgentID)
 
 	assert.True(t, response)
 
 	helper.mock.AssertExpectations(t)
 	helper.healthMock.AssertExpectations(t)
-}
-
-func TestHost_GetHealthData_ReturnsNilWhenErrorOccurs(t *testing.T) {
-	hostRepo := new(mocks.IHostRepository)
-	healthRepo := new(mocks.IHealthRepository)
-	hostService := NewHostService(hostRepo, healthRepo)
-	healthMock := &healthRepo.Mock
-
-	healthMock.On("Find", mock.Anything).Return(nil, fmt.Errorf("failed to get data"))
-
-	response := hostService.getHealthData(hostData[0].AgentID, 2)
-
-	assert.Nil(t, response)
-
-	healthMock.AssertExpectations(t)
-}
-
-func TestHost_GetHealthData_SortsDataDescending(t *testing.T) {
-	hostRepo := new(mocks.IHostRepository)
-	healthRepo := new(mocks.IHealthRepository)
-	hostService := NewHostService(hostRepo, healthRepo)
-	healthMock := &healthRepo.Mock
-
-	healthMock.On("Find", mock.Anything).Return([]types.Health{
-		{
-			AgentID:    "1",
-			CreateTime: 1,
-		},
-		{
-			AgentID:    "1",
-			CreateTime: 500,
-		},
-		{
-			AgentID:    "1",
-			CreateTime: 1000,
-		},
-	}, nil)
-
-	response := hostService.getHealthData(hostData[0].AgentID, 2)
-
-	assert.Equal(t, 3, len(response))
-	assert.Equal(t, int64(1000), response[0].CreateTime)
-	assert.Equal(t, int64(1), response[2].CreateTime)
-
-	healthMock.AssertExpectations(t)
 }

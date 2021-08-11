@@ -131,3 +131,49 @@ func TestHealth_AddHealth_HandlesError(t *testing.T) {
 
 	helper.mock.AssertExpectations(t)
 }
+
+func TestHealth_GetLatestHealthDataByAgentID_SortsDataDescending(t *testing.T) {
+	healthRepo := new(mocks.IHealthRepository)
+	healthService := NewHealthService(healthRepo)
+	healthMock := &healthRepo.Mock
+
+	healthMock.On("Find", mock.Anything).Return([]types.Health{
+		{
+			AgentID:    "1",
+			CreateTime: 1,
+		},
+		{
+			AgentID:    "1",
+			CreateTime: 500,
+		},
+		{
+			AgentID:    "1",
+			CreateTime: 1000,
+		},
+	}, nil)
+
+	response := healthService.GetLatestHealthDataByAgentID("1", hostData[0].AgentID, 2)
+	data := response.Data.([]types.Health)
+
+	assert.Equal(t, 3, len(data))
+	assert.Equal(t, int64(1000), data[0].CreateTime)
+	assert.Equal(t, int64(1), data[2].CreateTime)
+
+	healthMock.AssertExpectations(t)
+}
+
+func TestHealth_GetLatestHealthDataByAgentID_HandlesError(t *testing.T) {
+	healthRepo := new(mocks.IHealthRepository)
+	healthService := NewHealthService(healthRepo)
+	healthMock := &healthRepo.Mock
+
+	healthMock.On("Find", mock.Anything).Return(nil, fmt.Errorf("failed to get data"))
+
+	response := healthService.GetLatestHealthDataByAgentID("1", hostData[0].AgentID, 2)
+
+	assert.Equal(t, response.Data, []types.Health{})
+	assert.Equal(t, "failed to get latest health data for agent: 1 - Request ID: 1", response.Error)
+	assert.False(t, response.Success)
+
+	healthMock.AssertExpectations(t)
+}

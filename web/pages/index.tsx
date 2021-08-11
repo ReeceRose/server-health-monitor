@@ -1,4 +1,4 @@
-import { NextPage } from 'next';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { useEffect, useState } from 'react';
 
 import AgentStats from '../components/Headers/AgentStats';
@@ -7,37 +7,57 @@ import { Health, Host, HostResponse } from '../interfaces/Index';
 import hostService from '../services/host.service';
 
 type Props = {
-  hosts: Host[];
+  initial_hosts: Host[];
   error: string;
 };
 
-const Index: NextPage<Props> = ({ hosts, error }) => {
+export const getServerSideProps: GetServerSideProps<Props> = async () => {
+  return await hostService.getAll().then((res) => {
+    const data: HostResponse = JSON.parse(JSON.stringify(res.data));
+    return { props: { initial_hosts: data.Data, error: data.Error } };
+  });
+};
+
+function Index({
+  initial_hosts,
+  error,
+}: InferGetServerSidePropsType<typeof getServerSideProps>): JSX.Element {
   // TODO: better error handling
   if (error) {
     alert(error);
   }
 
-  const [health, setHealth] = useState([]);
+  const [hosts, setHosts] = useState(initial_hosts);
 
   useEffect(() => {
     const ws = new WebSocket('wss://localhost:3000/ws/v1/health/');
 
     ws.onmessage = (event) => {
-      const parsed_data = JSON.parse(event.data);
-      console.log(parsed_data);
-      setHealth(parsed_data.Data);
-      // TODO: refactor this
-      parsed_data.Data.forEach((data: Health) => {
+      const data = JSON.parse(event.data);
+      const now = new Date().valueOf();
+
+      // TODO:
+      // Loop through hosts
+      // Get all health for that host
+      // Get last health packet (since sorted)
+      // Update online/lastConnected
+      data.Data.forEach((health: Health) => {
         hosts?.forEach((host) => {
-          if (host.agentID == data.agentID) {
-            console.log('found match');
-            if (data.createTime > (host.lastConnected || 0)) {
-              host.lastConnected = data.createTime;
+          if (host.agentID == health.agentID) {
+            if (health.createTime > (host.lastConnected || 0)) {
+              host.lastConnected = health.createTime;
+              // TODO: move this to a utils file
+              host.online =
+                parseInt((host.lastConnected || 0).toString().substr(0, 13)) >
+                now;
             }
+            host.health = data.Data;
             return;
           }
         });
       });
+      setHosts(hosts);
+      console.log(hosts);
     };
 
     return () => {
@@ -60,18 +80,8 @@ const Index: NextPage<Props> = ({ hosts, error }) => {
           </div>
         </div>
       </div>
-      {health?.map((health: Health) => (
-        <p key={health.createTime}>{health.agentID}</p>
-      ))}
     </>
   );
-};
-
-Index.getInitialProps = async () => {
-  return await hostService.getAll().then((res) => {
-    const data: HostResponse = JSON.parse(JSON.stringify(res.data));
-    return { hosts: data.Data, error: data.Error };
-  });
-};
+}
 
 export default Index;

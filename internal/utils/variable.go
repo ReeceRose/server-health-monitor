@@ -19,7 +19,6 @@ func GetVariable(key string) string {
 func GetVariableWithArgs(key string, args string) string {
 	// TODO: read from arguments
 	if args != "" {
-
 	}
 	value := os.Getenv(key)
 	if value != "" {

@@ -27,6 +27,8 @@ const (
 	LOG_FILE = "LOG_FILE"
 	// HEALTH_DELAY is a key used to lookup the minimum delay since last health reported (in minutes) to show server as offline (Used by: api)
 	HEALTH_DELAY = "HEALTH_DELAY"
+	// MINUTES_TO_INCLUDE_HEALTH is a key used to lookup the amount of minutes in the past to which we will include the health data for (Used by: api)
+	MINUTES_TO_INCLUDE_HEALTH = "MINUTES_TO_INCLUDE_HEALTH"
 	// DATA_WEBSOCKET_DELAY is a key used to lookup the delay (in seconds) between sending more data via websockets (Used by: api)
 	DATA_WEBSOCKET_DELAY = "DATA_WEBSOCKET_DELAY"
 	// Constant filenames

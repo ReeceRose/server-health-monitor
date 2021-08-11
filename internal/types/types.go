@@ -41,6 +41,7 @@ type Host struct {
 	VirtualizationRole   string             `json:"virtualizationRole" bson:"virtualizationRole"`
 	HostID               string             `json:"hostId" bson:"hostId"`
 	Online               bool               `json:"online" bson:",omitempty"`
+	Health               []Health           `json:"health" bson:",omitempty"`
 }
 
 // AgentInformation contains an ID which is used to differentiate between different agents

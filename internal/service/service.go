@@ -14,5 +14,6 @@ type IHostService interface {
 	GetHosts(requestID string) types.StandardResponse
 	GetHostByID(requestID, agentID string) types.StandardResponse
 	AddHost(requestID string, agentID string, data *types.Host) types.StandardResponse
-	isHostOnline(host *types.Host) bool
+	isHostOnline(agentID string) bool
+	getHealthData(agentID string, delay int) []types.Health
 }

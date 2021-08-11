@@ -7,10 +7,14 @@ import (
 	"github.com/PR-Developers/server-health-monitor/internal/consts"
 )
 
-func GetMinimumLastHealthPacketTime(now time.Time) int64 {
-	delay, err := strconv.Atoi(GetVariable(consts.HEALTH_DELAY))
-	if err != nil {
-		delay = 2
+// GetMinimumLastHealthPacketTime returns a timestamp based on the given time and delay (in seconds). If delay is 0, it will use GetVariable to get the delay.
+func GetMinimumLastHealthPacketTime(now time.Time, delay int) int64 {
+	if delay == 0 {
+		var err error
+		delay, err = strconv.Atoi(GetVariable(consts.HEALTH_DELAY))
+		if err != nil {
+			delay = 2
+		}
 	}
 	return now.UTC().Local().Add(-time.Minute * time.Duration(delay)).UnixNano()
 }

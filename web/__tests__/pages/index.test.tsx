@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { Host } from '../../interfaces/Index';
 
-import Home from '../../pages/index';
+import Index from '../../pages/index';
 
 const hosts: Host[] = [
   {
@@ -13,6 +13,6 @@ const hosts: Host[] = [
 ];
 
 test('Index page matches snapshot', () => {
-  const { asFragment } = render(<Home error="" hosts={hosts} />);
+  const { asFragment } = render(<Index error="" initial_hosts={hosts} />);
   expect(asFragment()).toMatchSnapshot();
 });

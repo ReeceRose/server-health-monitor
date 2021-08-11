@@ -24,6 +24,7 @@ export interface Host {
   agentID?: string;
   online?: boolean;
   lastConnected?: number;
+  health?: Health[];
 }
 
 export interface Health {

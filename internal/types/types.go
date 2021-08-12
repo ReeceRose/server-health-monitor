@@ -13,6 +13,20 @@ type StandardResponse struct {
 	Success    bool
 }
 
+type HealthReponse struct {
+	Data       []Health
+	StatusCode int
+	Error      string
+	Success    bool
+}
+
+type HostReponse struct {
+	Data       []Host
+	StatusCode int
+	Error      string
+	Success    bool
+}
+
 // Health contains all information realted to an agents health
 type Health struct {
 	ID         primitive.ObjectID `json:"_id" bson:"_id"`

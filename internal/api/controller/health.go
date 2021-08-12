@@ -22,7 +22,7 @@ type HealthController struct {
 
 // NewHealthController returns a new HealthController with the service/repository initialized
 func NewHealthController() *HealthController {
-	healthService := service.NewHealthService(repository.NewHealthRepository())
+	healthService := service.NewHealthService(repository.NewHealthRepository(), repository.NewHostRepository())
 	return &HealthController{
 		service:     healthService,
 		hostService: service.NewHostService(repository.NewHostRepository(), healthService),
@@ -40,12 +40,13 @@ func (controller *HealthController) GetHealth(c echo.Context) error {
 	return c.JSON(res.StatusCode, res)
 }
 
-func (controller *HealthController) GetLatestHealthDataForAgents(c echo.Context) error {
-	lastCheck, err := strconv.Atoi(c.Param("lastCheck"))
+// GetLatestHealthDataForAgentByAgentId returns all health data for an agent since a given time
+func (controller *HealthController) GetLatestHealthDataForAgentByAgentId(c echo.Context) error {
+	since, err := strconv.Atoi(c.Param("since"))
 	if err != nil {
 		return c.JSON(400, types.StandardResponse{
 			StatusCode: 400,
-			Error:      "failed to parse lastCheck",
+			Error:      "failed to parse since timestamp",
 			Success:    false,
 			Data:       nil,
 		})
@@ -53,7 +54,29 @@ func (controller *HealthController) GetLatestHealthDataForAgents(c echo.Context)
 
 	res := controller.service.GetLatestHealthDataByAgentID(c.Response().Header().Get("X-Request-ID"),
 		c.Param("agent-id"),
-		int64(lastCheck),
+		int64(since),
+	)
+	return c.JSON(200, types.StandardResponse{
+		Data:       res,
+		StatusCode: 200,
+		Success:    true,
+	})
+}
+
+// GetLatestHealthDataForAgents returns all health data for all agents since a given time
+func (controller *HealthController) GetLatestHealthDataForAgents(c echo.Context) error {
+	since, err := strconv.Atoi(c.Param("since"))
+	if err != nil {
+		return c.JSON(400, types.StandardResponse{
+			StatusCode: 400,
+			Error:      "failed to parse since timestamp",
+			Success:    false,
+			Data:       nil,
+		})
+	}
+
+	res := controller.service.GetLatestHealthDataForAgents(c.Response().Header().Get("X-Request-ID"),
+		int64(since),
 	)
 	return c.JSON(200, types.StandardResponse{
 		Data:       res,
@@ -77,9 +100,10 @@ func (controller *HealthController) GetHealthWS(c echo.Context) error {
 	websocket.Handler(func(ws *websocket.Conn) {
 		defer ws.Close()
 		for {
-			websocket.JSON.Send(ws, controller.hostService.GetLatestHealthDataForAgents(requestID, lastCheck))
-			if err != nil {
-				log.Error("failed to send websocket data for request: " + requestID)
+			res := controller.service.GetLatestHealthDataForAgents(requestID, lastCheck)
+			websocket.JSON.Send(ws, res)
+			if res.Success {
+				log.Errorf("failed to send websocket data for request: %s %s", requestID, err.Error())
 			}
 
 			lastCheck = time.Now().UTC().UnixNano()

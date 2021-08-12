@@ -36,17 +36,18 @@ func NewHostService(hostRepository repository.IHostRepository, healthService IHe
 }
 
 // GetHosts returns all hosts
-func (s *hostService) GetHosts(requestID string, includeHealthData bool) types.StandardResponse {
+func (s *hostService) GetHosts(requestID string, includeHealthData bool) types.HostReponse {
 	s.log.Info("attemping to get all hosts - Request ID: " + requestID)
 	data, err := s.hostRepository.Find(bson.M{})
 	if err != nil {
-		return types.StandardResponse{
-			Error:      "failed to get all hosts data - Request ID: " + requestID,
-			StatusCode: http.StatusInternalServerError,
+		return types.HostReponse{
 			Data:       []types.Host{},
+			StatusCode: http.StatusInternalServerError,
+			Error:      fmt.Sprintf("failed to get all hosts data - Request ID: %s", requestID),
 			Success:    false,
 		}
 	}
+
 	if includeHealthData {
 		minutesToIncludeHealthData, err := strconv.Atoi(utils.GetVariable(consts.MINUTES_TO_INCLUDE_HEALTH))
 		if err != nil {
@@ -55,18 +56,21 @@ func (s *hostService) GetHosts(requestID string, includeHealthData bool) types.S
 
 		for i := range data {
 			data[i].Online = s.isHostOnline(requestID, data[i].AgentID) //TODO: refactor so two database reads aren't required
-			data[i].Health = s.healthService.GetLatestHealthDataByAgentID(requestID, data[i].AgentID,
+			res := s.healthService.GetLatestHealthDataByAgentID(requestID, data[i].AgentID,
 				utils.GetMinimumLastHealthPacketTime(time.Now(), minutesToIncludeHealthData),
 			)
-			if len(data[i].Health) >= 1 {
-				data[i].LastConnected = data[i].Health[0].CreateTime
+			if res.Success {
+				data[i].Health = res.Data
+				if len(data[i].Health) >= 1 {
+					data[i].LastConnected = data[i].Health[0].CreateTime
+				}
 			}
 		}
 	}
 
 	s.log.Info("successfully got all hosts data - Request ID: " + requestID)
 
-	return types.StandardResponse{
+	return types.HostReponse{
 		Data:       data,
 		StatusCode: http.StatusOK,
 		Success:    true,
@@ -74,45 +78,48 @@ func (s *hostService) GetHosts(requestID string, includeHealthData bool) types.S
 }
 
 // GetHostByID returns a host given an id
-func (s *hostService) GetHostByID(requestID, agentID string, includeHealthData bool) types.StandardResponse {
+func (s *hostService) GetHostByID(requestID, agentID string, includeHealthData bool) types.HostReponse {
 	s.log.Infof("attemping to get host data for agent: %s - Request ID: %s", agentID, requestID)
 
 	data, err := s.hostRepository.Find(bson.M{"agentID": agentID})
 	if err != nil {
-		return types.StandardResponse{
-			Error:      fmt.Sprintf("failed to get host data for agent: %s - Request ID: %s", agentID, requestID),
+		return types.HostReponse{
+			Data:       []types.Host{},
 			StatusCode: http.StatusInternalServerError,
-			Data:       []types.Host{},
-			Success:    false,
-		}
-	}
-
-	if len(data) == 0 {
-		return types.StandardResponse{
 			Error:      fmt.Sprintf("failed to get host data for agent: %s - Request ID: %s", agentID, requestID),
-			StatusCode: http.StatusNoContent,
+			Success:    false,
+		}
+	}
+	if len(data) == 0 {
+		return types.HostReponse{
 			Data:       []types.Host{},
+			StatusCode: http.StatusNoContent,
+			Error:      fmt.Sprintf("failed to get host data for agent: %s - Request ID: %s", agentID, requestID),
 			Success:    false,
 		}
 	}
 
-	minutesToIncludeHealthData, err := strconv.Atoi(utils.GetVariable(consts.MINUTES_TO_INCLUDE_HEALTH))
-	if err != nil {
-		minutesToIncludeHealthData = 5
-	}
+	if includeHealthData {
+		minutesToIncludeHealthData, err := strconv.Atoi(utils.GetVariable(consts.MINUTES_TO_INCLUDE_HEALTH))
+		if err != nil {
+			minutesToIncludeHealthData = 5
+		}
 
-	data[0].Online = s.isHostOnline(requestID, agentID) // TODO: refactor to remove two database reads
-	data[0].Health = s.healthService.GetLatestHealthDataByAgentID(requestID, agentID,
-		utils.GetMinimumLastHealthPacketTime(time.Now(), minutesToIncludeHealthData),
-	)
-
-	if len(data[0].Health) >= 1 {
-		data[0].LastConnected = data[0].Health[0].CreateTime
+		data[0].Online = s.isHostOnline(requestID, agentID) // TODO: refactor to remove two database reads
+		res := s.healthService.GetLatestHealthDataByAgentID(requestID, agentID,
+			utils.GetMinimumLastHealthPacketTime(time.Now(), minutesToIncludeHealthData),
+		)
+		if res.Success {
+			data[0].Health = res.Data
+			if len(data[0].Health) >= 1 {
+				data[0].LastConnected = data[0].Health[0].CreateTime
+			}
+		}
 	}
 
 	s.log.Infof("successfully got host data for agent: %s - Request ID: %s", agentID, requestID)
 
-	return types.StandardResponse{
+	return types.HostReponse{
 		Data:       data,
 		StatusCode: http.StatusOK,
 		Success:    true,
@@ -120,23 +127,24 @@ func (s *hostService) GetHostByID(requestID, agentID string, includeHealthData b
 }
 
 // AddHost inserts new host
-func (s *hostService) AddHost(requestID string, agentID string, data *types.Host) types.StandardResponse {
+func (s *hostService) AddHost(requestID string, agentID string, data *types.Host) types.HostReponse {
 	s.log.Infof("attemping to insert host data for agent: %s - Request ID: %s", agentID, requestID)
 
 	now := time.Now().UTC().UnixNano()
 	data.AgentID = agentID
 	data.UpdateTime = now
 	res := s.GetHostByID(requestID, agentID, false)
-	if original := res.Data.([]types.Host); len(original) >= 1 {
-		data.ID = original[0].ID
-		data.CreateTime = original[0].CreateTime
+	if res.Success && len(res.Data) >= 1 {
+		first := res.Data[0]
+		data.ID = first.ID
+		data.CreateTime = first.CreateTime
 		err := s.hostRepository.UpdateByID(data)
 
 		if err != nil {
-			return types.StandardResponse{
-				Error:      fmt.Sprintf("failed to update data for agent: %s - Request ID %s", agentID, requestID),
-				StatusCode: http.StatusInternalServerError,
+			return types.HostReponse{
 				Data:       []types.Host{},
+				StatusCode: http.StatusInternalServerError,
+				Error:      fmt.Sprintf("failed to update data for agent: %s - Request ID %s", agentID, requestID),
 				Success:    false,
 			}
 		}
@@ -149,10 +157,10 @@ func (s *hostService) AddHost(requestID string, agentID string, data *types.Host
 		_, err := s.hostRepository.Insert(data)
 
 		if err != nil {
-			return types.StandardResponse{
-				Error:      fmt.Sprintf("failed to insert data for agent: %s - Request ID %s", agentID, requestID),
-				StatusCode: http.StatusInternalServerError,
+			return types.HostReponse{
 				Data:       []types.Host{},
+				StatusCode: http.StatusInternalServerError,
+				Error:      fmt.Sprintf("failed to insert data for agent: %s - Request ID %s", agentID, requestID),
 				Success:    false,
 			}
 		}
@@ -160,36 +168,14 @@ func (s *hostService) AddHost(requestID string, agentID string, data *types.Host
 		s.log.Infof("successfully inserted host data for agent: %s - Request ID: %s", agentID, requestID)
 	}
 
-	return types.StandardResponse{
-		Data:       data,
-		StatusCode: http.StatusOK,
-		Success:    true,
-	}
-}
-
-func (s *hostService) GetLatestHealthDataForAgents(requestID string, lastCheck int64) types.StandardResponse {
-	data := s.GetHosts(requestID, false)
-	if !data.Success {
-		return types.StandardResponse{
-			Error:      fmt.Sprintf("failed to get hosts - Request ID: %s", requestID),
-			StatusCode: http.StatusInternalServerError,
-			Data:       []types.Health{},
-			Success:    false,
-		}
-	}
-
-	hosts := data.Data.([]types.Host)
-	for i, host := range hosts {
-		hosts[i].Health = s.healthService.GetLatestHealthDataByAgentID(requestID, host.AgentID, lastCheck)
-	}
-
-	return types.StandardResponse{
-		Data:       hosts,
+	return types.HostReponse{
+		Data:       []types.Host{*data},
 		StatusCode: http.StatusOK,
 		Success:    true,
 	}
 }
 
 func (s *hostService) isHostOnline(requestID string, agentID string) bool {
-	return len(s.healthService.GetLatestHealthDataByAgentID(requestID, agentID, 0)) >= 1
+	res := s.healthService.GetLatestHealthDataByAgentID(requestID, agentID, 0)
+	return !res.Success || len(res.Data) >= 1
 }

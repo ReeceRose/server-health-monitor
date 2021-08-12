@@ -48,6 +48,7 @@ func (s *hostService) GetHosts(requestID string, includeHealthData bool) types.H
 		}
 	}
 
+	// TODO: refactor this logic as it's the same as in GetHostById
 	if includeHealthData {
 		minutesToIncludeHealthData, err := strconv.Atoi(utils.GetVariable(consts.MINUTES_TO_INCLUDE_HEALTH))
 		if err != nil {
@@ -64,6 +65,7 @@ func (s *hostService) GetHosts(requestID string, includeHealthData bool) types.H
 				if len(data[i].Health) >= 1 {
 					data[i].LastConnected = data[i].Health[0].CreateTime
 				}
+				// TODO: else, get latest health packet and set as last connected
 			}
 		}
 	}

@@ -103,7 +103,7 @@ func (controller *HealthController) GetHealthWS(c echo.Context) error {
 			res := controller.service.GetLatestHealthDataForAgents(requestID, lastCheck)
 			websocket.JSON.Send(ws, res)
 			if res.Success {
-				log.Errorf("failed to send websocket data for request: %s %s", requestID, err.Error())
+				log.Error(res.Error)
 			}
 
 			lastCheck = time.Now().UTC().UnixNano()

@@ -1,5 +1,5 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import AgentStats from '../components/Headers/AgentStats';
 import AgentInformation from '../components/Tables/AgentInformation';
@@ -28,35 +28,52 @@ function Index({
   }
 
   const [hosts, setHosts] = useState(initial_hosts);
+  const websocket = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    const ws = new WebSocket('wss://localhost:3000/ws/v1/health/');
+    websocket.current = new WebSocket('wss://localhost:3000/ws/v1/health/');
 
-    ws.onmessage = (event) => {
+    return () => {
+      if (!websocket.current) return;
+      websocket.current.close();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!websocket.current) return;
+
+    websocket.current.onmessage = (event) => {
       const response = JSON.parse(event.data);
-      // const now = new Date().valueOf();
+      const now = new Date();
 
-      // TODO:
-      // Update online/lastConnected
-      console.log(response);
       response.Data?.forEach((host: Host) => {
+        const index = hosts.findIndex((h: Host) => h.agentID == host.agentID);
         if (host.health !== null) {
           if (host.health === undefined) return;
           const latestHealth = host.health[0];
-          if (latestHealth.createTime > (host.lastConnected || 0)) {
-            console.log('new health');
+          if (
+            latestHealth.createTime >
+            (host.lastConnected || hosts[index].lastConnected || 0)
+          ) {
             host.lastConnected = latestHealth.createTime;
           }
-          console.log(latestHealth);
         }
+
+        const lastConnected = new Date(
+          parseInt(
+            (host.lastConnected || hosts[index].lastConnected || 0)
+              .toString()
+              .substr(0, 13)
+          )
+        );
+        const maximumTimeSinceLastConnect =
+          (parseInt(process.env.HEALTH_DELAY || '5') || 5) * 60 * 1000;
+        host.online =
+          now.valueOf() - lastConnected.valueOf() < maximumTimeSinceLastConnect;
+        hosts[index] = host;
       });
 
-      setHosts(hosts);
-      console.log(hosts);
-    };
-
-    return () => {
-      ws.close();
+      setHosts([...hosts]);
     };
   }, [hosts]);
 

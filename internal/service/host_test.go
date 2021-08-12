@@ -68,7 +68,7 @@ func TestHost_GetHosts_ReturnsExpectedHostData(t *testing.T) {
 	helper := getInitializedHostService()
 	helper.mock.On("Find", bson.M{}).Return(hostData, nil)
 
-	response := helper.hostService.GetHosts("1")
+	response := helper.hostService.GetHosts("1", false)
 
 	data := response.Data.([]types.Host)
 
@@ -85,7 +85,7 @@ func TestHost_GetHosts_HandlesError(t *testing.T) {
 	helper := getInitializedHostService()
 	helper.mock.On("Find", bson.M{}).Return(nil, fmt.Errorf("failed to fetch host data"))
 
-	response := helper.hostService.GetHosts("1")
+	response := helper.hostService.GetHosts("1", false)
 
 	assert.Equal(t, 500, response.StatusCode)
 	assert.Equal(t, response.Data, []types.Host{})
@@ -99,7 +99,7 @@ func TestHost_GetHostByID_ReturnsExpectedHostData(t *testing.T) {
 	helper := getInitializedHostService()
 	helper.mock.On("Find", bson.M{"agentID": "1"}).Return([]types.Host{hostData[0]}, nil)
 
-	response := helper.hostService.GetHostByID("1", "1")
+	response := helper.hostService.GetHostByID("1", "1", false)
 
 	data := response.Data.([]types.Host)
 
@@ -115,7 +115,7 @@ func TestHost_GetHostByID_HandlesDatabaseError(t *testing.T) {
 	helper := getInitializedHostService()
 	helper.mock.On("Find", bson.M{"agentID": "100"}).Return(nil, fmt.Errorf("failed to fetch host data"))
 
-	response := helper.hostService.GetHostByID("1", "100")
+	response := helper.hostService.GetHostByID("1", "100", false)
 
 	assert.Equal(t, 500, response.StatusCode)
 	assert.Equal(t, response.Data, []types.Host{})
@@ -129,7 +129,7 @@ func TestHost_GetHostByID_HandlesNoHostsError(t *testing.T) {
 	helper := getInitializedHostService()
 	helper.mock.On("Find", bson.M{"agentID": "100"}).Return(nil, nil)
 
-	response := helper.hostService.GetHostByID("1", "100")
+	response := helper.hostService.GetHostByID("1", "100", false)
 
 	assert.Equal(t, 204, response.StatusCode)
 	assert.Equal(t, response.Data, []types.Host{})

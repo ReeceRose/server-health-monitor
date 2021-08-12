@@ -23,6 +23,7 @@ func NewHostController() *HostController {
 func (controller *HostController) GetHosts(c echo.Context) error {
 	res := controller.service.GetHosts(
 		c.Response().Header().Get("X-Request-ID"),
+		true,
 	)
 	return c.JSON(res.StatusCode, res)
 }
@@ -32,6 +33,7 @@ func (controller *HostController) GetHostById(c echo.Context) error {
 	res := controller.service.GetHostByID(
 		c.Response().Header().Get("X-Request-ID"),
 		c.Param("agent-id"),
+		true,
 	)
 	return c.JSON(res.StatusCode, res)
 }

@@ -41,6 +41,7 @@ type Host struct {
 	VirtualizationRole   string             `json:"virtualizationRole" bson:"virtualizationRole"`
 	HostID               string             `json:"hostId" bson:"hostId"`
 	Online               bool               `json:"online" bson:",omitempty"`
+	LastConnected        int64              `json:"lastConnected" bson:",omitempty"`
 	Health               []Health           `json:"health" bson:",omitempty"`
 }
 

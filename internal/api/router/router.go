@@ -20,6 +20,8 @@ func Setup(e *echo.Echo) {
 	e.GET("/api/v1/health/", func(c echo.Context) error { return health.GetHealth(c) })
 	e.GET("/api/v1/health/:agent-id", func(c echo.Context) error { return health.GetHealthByAgentId(c) })
 	e.POST("/api/v1/health/", func(c echo.Context) error { return health.PostHealth(c) })
+	e.POST("/api/v1/health/:agent-id/:lastCheck", func(c echo.Context) error { return health.GetLatestHealthDataForAgents(c) })
+
 	e.GET("/api/v1/host/", func(c echo.Context) error { return host.GetHosts(c) })
 	e.GET("/api/v1/host/:agent-id", func(c echo.Context) error { return host.GetHostById(c) })
 	e.POST("/api/v1/host/", func(c echo.Context) error { return host.PostHost(c) })

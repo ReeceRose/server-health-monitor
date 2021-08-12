@@ -36,7 +36,7 @@ func NewHostService(hostRepository repository.IHostRepository, healthService IHe
 }
 
 // GetHosts returns all hosts
-func (s *hostService) GetHosts(requestID string) types.StandardResponse {
+func (s *hostService) GetHosts(requestID string, includeHealthData bool) types.StandardResponse {
 	s.log.Info("attemping to get all hosts - Request ID: " + requestID)
 	data, err := s.hostRepository.Find(bson.M{})
 	if err != nil {
@@ -47,17 +47,21 @@ func (s *hostService) GetHosts(requestID string) types.StandardResponse {
 			Success:    false,
 		}
 	}
+	if includeHealthData {
+		minutesToIncludeHealthData, err := strconv.Atoi(utils.GetVariable(consts.MINUTES_TO_INCLUDE_HEALTH))
+		if err != nil {
+			minutesToIncludeHealthData = 5
+		}
 
-	minutesToIncludeHealthData, err := strconv.Atoi(utils.GetVariable(consts.MINUTES_TO_INCLUDE_HEALTH))
-	if err != nil {
-		minutesToIncludeHealthData = 5
-	}
-
-	for i := range data {
-		data[i].Online = s.isHostOnline(requestID, data[i].AgentID) //TODO: refactor so two database reads aren't required
-		res := s.healthService.GetLatestHealthDataByAgentID(requestID, data[i].AgentID, minutesToIncludeHealthData)
-		data[0].Health = res.Data.([]types.Health)
-
+		for i := range data {
+			data[i].Online = s.isHostOnline(requestID, data[i].AgentID) //TODO: refactor so two database reads aren't required
+			data[i].Health = s.healthService.GetLatestHealthDataByAgentID(requestID, data[i].AgentID,
+				utils.GetMinimumLastHealthPacketTime(time.Now(), minutesToIncludeHealthData),
+			)
+			if len(data[i].Health) >= 1 {
+				data[i].LastConnected = data[i].Health[0].CreateTime
+			}
+		}
 	}
 
 	s.log.Info("successfully got all hosts data - Request ID: " + requestID)
@@ -70,7 +74,7 @@ func (s *hostService) GetHosts(requestID string) types.StandardResponse {
 }
 
 // GetHostByID returns a host given an id
-func (s *hostService) GetHostByID(requestID, agentID string) types.StandardResponse {
+func (s *hostService) GetHostByID(requestID, agentID string, includeHealthData bool) types.StandardResponse {
 	s.log.Infof("attemping to get host data for agent: %s - Request ID: %s", agentID, requestID)
 
 	data, err := s.hostRepository.Find(bson.M{"agentID": agentID})
@@ -98,8 +102,13 @@ func (s *hostService) GetHostByID(requestID, agentID string) types.StandardRespo
 	}
 
 	data[0].Online = s.isHostOnline(requestID, agentID) // TODO: refactor to remove two database reads
-	res := s.healthService.GetLatestHealthDataByAgentID(requestID, agentID, minutesToIncludeHealthData)
-	data[0].Health = res.Data.([]types.Health)
+	data[0].Health = s.healthService.GetLatestHealthDataByAgentID(requestID, agentID,
+		utils.GetMinimumLastHealthPacketTime(time.Now(), minutesToIncludeHealthData),
+	)
+
+	if len(data[0].Health) >= 1 {
+		data[0].LastConnected = data[0].Health[0].CreateTime
+	}
 
 	s.log.Infof("successfully got host data for agent: %s - Request ID: %s", agentID, requestID)
 
@@ -117,7 +126,7 @@ func (s *hostService) AddHost(requestID string, agentID string, data *types.Host
 	now := time.Now().UTC().UnixNano()
 	data.AgentID = agentID
 	data.UpdateTime = now
-	res := s.GetHostByID(requestID, agentID)
+	res := s.GetHostByID(requestID, agentID, false)
 	if original := res.Data.([]types.Host); len(original) >= 1 {
 		data.ID = original[0].ID
 		data.CreateTime = original[0].CreateTime
@@ -158,7 +167,29 @@ func (s *hostService) AddHost(requestID string, agentID string, data *types.Host
 	}
 }
 
+func (s *hostService) GetLatestHealthDataForAgents(requestID string, lastCheck int64) types.StandardResponse {
+	data := s.GetHosts(requestID, false)
+	if !data.Success {
+		return types.StandardResponse{
+			Error:      fmt.Sprintf("failed to get hosts - Request ID: %s", requestID),
+			StatusCode: http.StatusInternalServerError,
+			Data:       []types.Health{},
+			Success:    false,
+		}
+	}
+
+	hosts := data.Data.([]types.Host)
+	for i, host := range hosts {
+		hosts[i].Health = s.healthService.GetLatestHealthDataByAgentID(requestID, host.AgentID, lastCheck)
+	}
+
+	return types.StandardResponse{
+		Data:       hosts,
+		StatusCode: http.StatusOK,
+		Success:    true,
+	}
+}
+
 func (s *hostService) isHostOnline(requestID string, agentID string) bool {
-	res := s.healthService.GetLatestHealthDataByAgentID(requestID, agentID, 0)
-	return len(res.Data.([]types.Health)) >= 1
+	return len(s.healthService.GetLatestHealthDataByAgentID(requestID, agentID, 0)) >= 1
 }

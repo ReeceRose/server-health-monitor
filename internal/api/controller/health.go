@@ -16,13 +16,16 @@ import (
 
 // HealthController provides a health service to interact with
 type HealthController struct {
-	service service.IHealthService
+	service     service.IHealthService
+	hostService service.IHostService
 }
 
 // NewHealthController returns a new HealthController with the service/repository initialized
 func NewHealthController() *HealthController {
+	healthService := service.NewHealthService(repository.NewHealthRepository())
 	return &HealthController{
-		service: service.NewHealthService(repository.NewHealthRepository()),
+		service:     healthService,
+		hostService: service.NewHostService(repository.NewHostRepository(), healthService),
 	}
 }
 
@@ -37,6 +40,28 @@ func (controller *HealthController) GetHealth(c echo.Context) error {
 	return c.JSON(res.StatusCode, res)
 }
 
+func (controller *HealthController) GetLatestHealthDataForAgents(c echo.Context) error {
+	lastCheck, err := strconv.Atoi(c.Param("lastCheck"))
+	if err != nil {
+		return c.JSON(400, types.StandardResponse{
+			StatusCode: 400,
+			Error:      "failed to parse lastCheck",
+			Success:    false,
+			Data:       nil,
+		})
+	}
+
+	res := controller.service.GetLatestHealthDataByAgentID(c.Response().Header().Get("X-Request-ID"),
+		c.Param("agent-id"),
+		int64(lastCheck),
+	)
+	return c.JSON(200, types.StandardResponse{
+		Data:       res,
+		StatusCode: 200,
+		Success:    true,
+	})
+}
+
 // GetHealthWS returns all health data via websockets
 func (controller *HealthController) GetHealthWS(c echo.Context) error {
 	ws_delay := utils.GetVariable(consts.DATA_WEBSOCKET_DELAY)
@@ -47,16 +72,17 @@ func (controller *HealthController) GetHealthWS(c echo.Context) error {
 
 	log := logger.Instance()
 	requestID := c.Response().Header().Get("X-Request-ID")
-	// now := time.Now().UTC().UnixNano()
+	lastCheck := utils.GetMinimumLastHealthPacketTime(time.Now(), 2)
 
 	websocket.Handler(func(ws *websocket.Conn) {
 		defer ws.Close()
 		for {
-			websocket.JSON.Send(ws, controller.service.GetHealth(requestID))
+			websocket.JSON.Send(ws, controller.hostService.GetLatestHealthDataForAgents(requestID, lastCheck))
 			if err != nil {
 				log.Error("failed to send websocket data for request: " + requestID)
 			}
 
+			lastCheck = time.Now().UTC().UnixNano()
 			time.Sleep(time.Second * time.Duration(delay))
 		}
 	}).ServeHTTP(c.Response(), c.Request())

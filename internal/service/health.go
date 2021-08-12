@@ -9,7 +9,6 @@ import (
 	"github.com/PR-Developers/server-health-monitor/internal/logger"
 	"github.com/PR-Developers/server-health-monitor/internal/repository"
 	"github.com/PR-Developers/server-health-monitor/internal/types"
-	"github.com/PR-Developers/server-health-monitor/internal/utils"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -106,25 +105,23 @@ func (s *healthService) AddHealth(requestID string, agentID string, data *types.
 	}
 }
 
-// GetLatestHealthDataByAgentID returns the latest health data within a certain delay for a given agent
-func (s *healthService) GetLatestHealthDataByAgentID(requestID string, agentID string, delay int) types.StandardResponse {
+// TODO: get all health for all agents since the last timestamp
+
+// GetLatestHealthDataByAgentID returns the latest health data since the passed time for a given agent
+func (s *healthService) GetLatestHealthDataByAgentID(requestID string, agentID string, time int64) []types.Health {
 	s.log.Infof("attemping to get health data for agent: %s - Request ID: %s", agentID, requestID)
 
 	data, err := s.healthRepository.Find(bson.M{
 		"agentID": bson.M{"$eq": agentID},
 		"$and": []bson.M{
 			{
-				"createTime": bson.M{"$gt": utils.GetMinimumLastHealthPacketTime(time.Now(), delay)},
+				"createTime": bson.M{"$gt": time},
 			},
 		},
 	})
+
 	if err != nil {
-		return types.StandardResponse{
-			Error:      fmt.Sprintf("failed to get latest health data for agent: %s - Request ID: %s", agentID, requestID),
-			StatusCode: http.StatusInternalServerError,
-			Data:       []types.Health{},
-			Success:    false,
-		}
+		return nil
 	}
 
 	s.log.Infof("successfully got health data for agent: %s - Request ID: %s", agentID, requestID)
@@ -133,9 +130,5 @@ func (s *healthService) GetLatestHealthDataByAgentID(requestID string, agentID s
 		return data[i].CreateTime > data[j].CreateTime
 	})
 
-	return types.StandardResponse{
-		Data:       data,
-		StatusCode: http.StatusOK,
-		Success:    true,
-	}
+	return data
 }

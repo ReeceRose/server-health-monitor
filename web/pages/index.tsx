@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 import AgentStats from '../components/Headers/AgentStats';
 import AgentInformation from '../components/Tables/AgentInformation';
-import { Health, Host, HostResponse } from '../interfaces/Index';
+import { Host, HostResponse } from '../interfaces/Index';
 import hostService from '../services/host.service';
 
 type Props = {
@@ -33,29 +33,24 @@ function Index({
     const ws = new WebSocket('wss://localhost:3000/ws/v1/health/');
 
     ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      const now = new Date().valueOf();
+      const response = JSON.parse(event.data);
+      // const now = new Date().valueOf();
 
       // TODO:
-      // Loop through hosts
-      // Get all health for that host
-      // Get last health packet (since sorted)
       // Update online/lastConnected
-      data.Data.forEach((health: Health) => {
-        hosts?.forEach((host) => {
-          if (host.agentID == health.agentID) {
-            if (health.createTime > (host.lastConnected || 0)) {
-              host.lastConnected = health.createTime;
-              // TODO: move this to a utils file
-              host.online =
-                parseInt((host.lastConnected || 0).toString().substr(0, 13)) >
-                now;
-            }
-            host.health = data.Data;
-            return;
+      console.log(response);
+      response.Data?.forEach((host: Host) => {
+        if (host.health !== null) {
+          if (host.health === undefined) return;
+          const latestHealth = host.health[0];
+          if (latestHealth.createTime > (host.lastConnected || 0)) {
+            console.log('new health');
+            host.lastConnected = latestHealth.createTime;
           }
-        });
+          console.log(latestHealth);
+        }
       });
+
       setHosts(hosts);
       console.log(hosts);
     };

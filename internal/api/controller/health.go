@@ -102,7 +102,7 @@ func (controller *HealthController) GetHealthWS(c echo.Context) error {
 		for {
 			res := controller.service.GetLatestHealthDataForAgents(requestID, lastCheck)
 			websocket.JSON.Send(ws, res)
-			if res.Success {
+			if !res.Success {
 				log.Error(res.Error)
 			}
 

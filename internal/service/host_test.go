@@ -198,29 +198,37 @@ func TestHost_AddHost_HandlesFailedToInsertHostError(t *testing.T) {
 }
 
 func TestHost_IsHostOnline_HostIsOnline(t *testing.T) {
-	helper := getInitializedHostService()
+	hostRepo := new(mocks.IHostRepository)
+	healthRepo := new(mocks.IHealthRepository)
+	healthService := NewHealthService(healthRepo, hostRepo)
+	hostService := NewHostService(hostRepo, healthService)
+	healthMock := &healthRepo.Mock
 
-	helper.healthMock.On("Find", mock.Anything).Return([]types.Health{
+	healthMock.On("FindWithFilter", mock.Anything, mock.Anything).Return([]types.Health{
 		{
 			CreateTime: time.Now().UnixNano(),
 		},
 	}, nil)
 
-	res := helper.hostService.isHostOnline("1", hostData[0].AgentID)
+	res := hostService.isHostOnline("1", hostData[0].AgentID)
 
 	assert.True(t, res)
 
-	helper.mock.AssertExpectations(t)
-	helper.healthMock.AssertExpectations(t)
+	healthMock.AssertExpectations(t)
 }
 
 func TestHost_IsHostOnline_HostIsOffline(t *testing.T) {
-	helper := getInitializedHostService()
+	hostRepo := new(mocks.IHostRepository)
+	healthRepo := new(mocks.IHealthRepository)
+	healthService := NewHealthService(healthRepo, hostRepo)
+	hostService := NewHostService(hostRepo, healthService)
+	healthMock := &healthRepo.Mock
 
-	res := helper.hostService.isHostOnline("1", hostData[0].AgentID)
+	healthMock.On("FindWithFilter", mock.Anything, mock.Anything).Return([]types.Health{}, nil)
 
-	assert.True(t, res)
+	res := hostService.isHostOnline("1", hostData[0].AgentID)
 
-	helper.mock.AssertExpectations(t)
-	helper.healthMock.AssertExpectations(t)
+	assert.False(t, res)
+
+	healthMock.AssertExpectations(t)
 }

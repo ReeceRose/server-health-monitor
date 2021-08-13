@@ -12,6 +12,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type healthService struct {
@@ -107,20 +108,21 @@ func (s *healthService) AddHealth(requestID string, agentID string, data *types.
 	}
 }
 
-// TODO: get all health for all agents since the last timestamp
-
 // GetLatestHealthDataByAgentID returns the latest health data since a givrm time for a given agent
 func (s *healthService) GetLatestHealthDataByAgentID(requestID string, agentID string, time int64) types.HealthReponse {
 	s.log.Infof("attemping to get health data for agent: %s - Request ID: %s", agentID, requestID)
 
-	data, err := s.healthRepository.Find(bson.M{
+	options := options.Find()
+	options.SetLimit(100)
+
+	data, err := s.healthRepository.FindWithFilter(bson.M{
 		"agentID": bson.M{"$eq": agentID},
 		"$and": []bson.M{
 			{
 				"createTime": bson.M{"$gt": time},
 			},
 		},
-	})
+	}, options)
 
 	if err != nil {
 		return types.HealthReponse{
@@ -169,4 +171,14 @@ func (s *healthService) GetLatestHealthDataForAgents(requestID string, since int
 		StatusCode: http.StatusOK,
 		Success:    true,
 	}
+}
+
+// GetHealthForAgentWithOptions returns all health data for an agent given the options passed
+func (s *healthService) GetHealthForAgentWithOptions(requestID string, agentID string, options *options.FindOptions) []types.Health {
+	data, err := s.healthRepository.FindWithFilter(bson.M{"agentID": agentID}, options)
+
+	if err != nil {
+		return []types.Health{}
+	}
+	return data
 }

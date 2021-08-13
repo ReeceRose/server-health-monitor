@@ -45,17 +45,24 @@ function Index({
     websocket.current.onmessage = (event) => {
       const response = JSON.parse(event.data);
       const now = new Date();
-
+      let updateHosts = false;
       response.Data?.forEach((host: Host) => {
         const index = hosts.findIndex((h: Host) => h.agentID == host.agentID);
+        // let updateThisHost = false;
         if (host.health !== null) {
-          if (host.health === undefined) return;
+          if (host.health === undefined)
+            //|| host.health[0].createTime === 0
+            return;
+          hosts[index].health?.push(...host.health);
+          updateHosts = true;
           const latestHealth = host.health[0];
           if (
             latestHealth.createTime >
             (host.lastConnected || hosts[index].lastConnected || 0)
           ) {
-            host.lastConnected = latestHealth.createTime;
+            hosts[index].lastConnected = latestHealth.createTime;
+            updateHosts = true;
+            // updateThisHost = true;
           }
         }
 
@@ -68,12 +75,25 @@ function Index({
         );
         const maximumTimeSinceLastConnect =
           (parseInt(process.env.HEALTH_DELAY || '5') || 5) * 60 * 1000;
-        host.online =
+        const online =
           now.valueOf() - lastConnected.valueOf() < maximumTimeSinceLastConnect;
-        hosts[index] = host;
+        if (online != hosts[index].online) {
+          hosts[index].online = online;
+          updateHosts = true;
+          // updateThisHost = true;
+          if (host.lastConnected === 0) {
+            host.lastConnected = hosts[index].lastConnected;
+          }
+        }
+
+        // if (updateThisHost) {
+        //   hosts[index] = host;
+        // }
       });
 
-      setHosts([...hosts]);
+      if (updateHosts) {
+        setHosts([...hosts]);
+      }
     };
   }, [hosts]);
 

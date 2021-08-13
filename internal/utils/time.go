@@ -18,3 +18,11 @@ func GetMinimumLastHealthPacketTime(now time.Time, delay int) int64 {
 	}
 	return now.UTC().Local().Add(-time.Minute * time.Duration(delay)).UnixNano()
 }
+
+func GetMinutesToIncludeHealthData() int {
+	minutesToIncludeHealthData, err := strconv.Atoi(GetVariable(consts.MINUTES_TO_INCLUDE_HEALTH))
+	if err != nil {
+		minutesToIncludeHealthData = 5
+	}
+	return minutesToIncludeHealthData
+}

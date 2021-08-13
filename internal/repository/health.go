@@ -8,6 +8,7 @@ import (
 	"github.com/PR-Developers/server-health-monitor/internal/logger"
 	"github.com/PR-Developers/server-health-monitor/internal/types"
 	"github.com/PR-Developers/server-health-monitor/internal/utils"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type healthRepository struct {
@@ -34,7 +35,12 @@ func NewHealthRepository() IHealthRepository {
 
 // Find all health data given a certain query
 func (r *healthRepository) Find(query interface{}) ([]types.Health, error) {
-	cursor, err := r.collection.Find(r.db.Context(), query)
+	return r.FindWithFilter(query, nil)
+}
+
+// FindWithFilter returns all health data given a certain query and options
+func (r *healthRepository) FindWithFilter(query interface{}, options *options.FindOptions) ([]types.Health, error) {
+	cursor, err := r.collection.Find(r.db.Context(), query, options)
 	if err != nil {
 		msg := fmt.Sprintf("failed to read data from collection: %s with query: %s (%s)", r.collectionName, query, err.Error())
 		r.log.Error(msg)

@@ -3,10 +3,8 @@ package service
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
-	"github.com/PR-Developers/server-health-monitor/internal/consts"
 	"github.com/PR-Developers/server-health-monitor/internal/logger"
 	"github.com/PR-Developers/server-health-monitor/internal/repository"
 	"github.com/PR-Developers/server-health-monitor/internal/types"
@@ -14,6 +12,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type hostService struct {
@@ -48,26 +47,8 @@ func (s *hostService) GetHosts(requestID string, includeHealthData bool) types.H
 		}
 	}
 
-	// TODO: refactor this logic as it's the same as in GetHostById
 	if includeHealthData {
-		minutesToIncludeHealthData, err := strconv.Atoi(utils.GetVariable(consts.MINUTES_TO_INCLUDE_HEALTH))
-		if err != nil {
-			minutesToIncludeHealthData = 5
-		}
-
-		for i := range data {
-			data[i].Online = s.isHostOnline(requestID, data[i].AgentID) //TODO: refactor so two database reads aren't required
-			res := s.healthService.GetLatestHealthDataByAgentID(requestID, data[i].AgentID,
-				utils.GetMinimumLastHealthPacketTime(time.Now(), minutesToIncludeHealthData),
-			)
-			if res.Success {
-				data[i].Health = res.Data
-				if len(data[i].Health) >= 1 {
-					data[i].LastConnected = data[i].Health[0].CreateTime
-				}
-				// TODO: else, get latest health packet and set as last connected
-			}
-		}
+		s.getHealthDataForHosts(requestID, &data)
 	}
 
 	s.log.Info("successfully got all hosts data - Request ID: " + requestID)
@@ -102,21 +83,7 @@ func (s *hostService) GetHostByID(requestID, agentID string, includeHealthData b
 	}
 
 	if includeHealthData {
-		minutesToIncludeHealthData, err := strconv.Atoi(utils.GetVariable(consts.MINUTES_TO_INCLUDE_HEALTH))
-		if err != nil {
-			minutesToIncludeHealthData = 5
-		}
-
-		data[0].Online = s.isHostOnline(requestID, agentID) // TODO: refactor to remove two database reads
-		res := s.healthService.GetLatestHealthDataByAgentID(requestID, agentID,
-			utils.GetMinimumLastHealthPacketTime(time.Now(), minutesToIncludeHealthData),
-		)
-		if res.Success {
-			data[0].Health = res.Data
-			if len(data[0].Health) >= 1 {
-				data[0].LastConnected = data[0].Health[0].CreateTime
-			}
-		}
+		s.getHealthDataForHosts(agentID, &data)
 	}
 
 	s.log.Infof("successfully got host data for agent: %s - Request ID: %s", agentID, requestID)
@@ -178,6 +145,34 @@ func (s *hostService) AddHost(requestID string, agentID string, data *types.Host
 }
 
 func (s *hostService) isHostOnline(requestID string, agentID string) bool {
-	res := s.healthService.GetLatestHealthDataByAgentID(requestID, agentID, 0)
-	return !res.Success || len(res.Data) >= 1
+	res := s.healthService.GetLatestHealthDataByAgentID(requestID, agentID,
+		utils.GetMinimumLastHealthPacketTime(time.Now(),
+			utils.GetMinutesToIncludeHealthData(),
+		),
+	)
+	return res.Success && len(res.Data) >= 1
+}
+
+func (s *hostService) getHealthDataForHosts(requestID string, hosts *[]types.Host) {
+	for i := range *hosts {
+		(*hosts)[i].Online = s.isHostOnline(requestID, (*hosts)[i].AgentID)
+		res := s.healthService.GetLatestHealthDataByAgentID(requestID, (*hosts)[i].AgentID,
+			utils.GetMinimumLastHealthPacketTime(time.Now(), utils.GetMinutesToIncludeHealthData()),
+		)
+		if res.Success {
+			(*hosts)[i].Health = res.Data
+			if len((*hosts)[i].Health) >= 1 {
+				(*hosts)[i].LastConnected = (*hosts)[i].Health[0].CreateTime
+			} else {
+				// Get the last known health packet
+				options := options.Find()
+				options.SetSort(bson.D{primitive.E{Key: "createTime", Value: -1}})
+				options.SetLimit(1)
+				health := s.healthService.GetHealthForAgentWithOptions(requestID, (*hosts)[i].AgentID, options)
+				if len(health) >= 1 {
+					(*hosts)[i].LastConnected = health[0].CreateTime
+				}
+			}
+		}
+	}
 }

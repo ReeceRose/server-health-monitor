@@ -12,7 +12,7 @@ import (
 // Database is an interface which provides method signatures for interacting with a database
 type Database interface {
 	Disconnect() error
-	Client() *mongo.Client //TODO: either further refactor or accept this
+	Client() *mongo.Client
 	Context() context.Context
 }
 

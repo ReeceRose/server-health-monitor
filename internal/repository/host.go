@@ -9,6 +9,7 @@ import (
 	"github.com/PR-Developers/server-health-monitor/internal/types"
 	"github.com/PR-Developers/server-health-monitor/internal/utils"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type hostRepository struct {
@@ -35,7 +36,12 @@ func NewHostRepository() IHostRepository {
 
 // Find all host data given a certain query
 func (r *hostRepository) Find(query interface{}) ([]types.Host, error) {
-	cursor, err := r.collection.Find(r.db.Context(), query)
+	return r.FindWithFilter(query, nil)
+}
+
+// FindWithFilter returns all host data given a certain query and options
+func (r *hostRepository) FindWithFilter(query interface{}, options *options.FindOptions) ([]types.Host, error) {
+	cursor, err := r.collection.Find(r.db.Context(), query, options)
 	if err != nil {
 		msg := fmt.Sprintf("failed to read data from collection: %s with query: %s (%s)", r.collectionName, query, err.Error())
 		r.log.Error(msg)

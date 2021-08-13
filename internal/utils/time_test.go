@@ -25,3 +25,13 @@ func TestTime_GetMinimumLastHealthPacketTime_ReturnsExpectedTimeWhenFailedToConv
 	os.Setenv(consts.HEALTH_DELAY, "ABC")
 	assert.Equal(t, int64(1628042610000000000), GetMinimumLastHealthPacketTime(time.Unix(setTime, 0), 0))
 }
+
+func TestTime_GetMinutesToIncludeHealthDate_ReturnsExpected(t *testing.T) {
+	os.Setenv(consts.MINUTES_TO_INCLUDE_HEALTH, "2")
+	assert.Equal(t, 2, GetMinutesToIncludeHealthData())
+}
+
+func TestTime_GetMinutesToIncludeHealthDate_HandlesError(t *testing.T) {
+	os.Setenv(consts.MINUTES_TO_INCLUDE_HEALTH, "test")
+	assert.Equal(t, 5, GetMinutesToIncludeHealthData())
+}

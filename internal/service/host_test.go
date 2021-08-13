@@ -17,11 +17,11 @@ import (
 //go:generate mockery --dir=../ -r --name IHostRepository
 
 type testHostServiceHelper struct {
-	hostService   IHostService
-	healthService IHealthService
-	hostRepo      repository.IHostRepository
-	mock          *mock.Mock
-	healthMock    *mock.Mock
+	hostService    IHostService
+	healthService  IHealthService
+	hostRepo       repository.IHostRepository
+	hostRepoMock   *mock.Mock
+	healthRepoMock *mock.Mock
 }
 
 var (
@@ -48,25 +48,25 @@ func getInitializedHostService() testHostServiceHelper {
 	healthRepo := new(mocks.IHealthRepository)
 	healthService := NewHealthService(healthRepo, hostRepo)
 	hostService := NewHostService(hostRepo, healthService)
-	healthMock := &healthRepo.Mock
-	healthMock.On("Find", mock.Anything).Return([]types.Health{
+	healthRepoMock := &healthRepo.Mock
+	healthRepoMock.On("Find", mock.Anything).Return([]types.Health{
 		{
 			CreateTime: time.Now().Add(-time.Hour).UnixNano(),
 		},
 	}, nil)
 
 	return testHostServiceHelper{
-		healthService: healthService,
-		hostService:   hostService,
-		hostRepo:      hostRepo,
-		mock:          &hostRepo.Mock,
-		healthMock:    healthMock,
+		healthService:  healthService,
+		hostService:    hostService,
+		hostRepo:       hostRepo,
+		hostRepoMock:   &hostRepo.Mock,
+		healthRepoMock: healthRepoMock,
 	}
 }
 
 func TestHost_GetHosts_ReturnsExpectedHostData(t *testing.T) {
 	helper := getInitializedHostService()
-	helper.mock.On("Find", bson.M{}).Return(hostData, nil)
+	helper.hostRepoMock.On("Find", bson.M{}).Return(hostData, nil)
 
 	res := helper.hostService.GetHosts("1", false)
 
@@ -78,12 +78,12 @@ func TestHost_GetHosts_ReturnsExpectedHostData(t *testing.T) {
 	assert.Equal(t, int64(2), data[1].CreateTime)
 	assert.Equal(t, uint64(20), data[1].Uptime)
 
-	helper.mock.AssertExpectations(t)
+	helper.hostRepoMock.AssertExpectations(t)
 }
 
 func TestHost_GetHosts_HandlesError(t *testing.T) {
 	helper := getInitializedHostService()
-	helper.mock.On("Find", bson.M{}).Return(nil, fmt.Errorf("failed to fetch host data"))
+	helper.hostRepoMock.On("Find", bson.M{}).Return(nil, fmt.Errorf("failed to fetch host data"))
 
 	res := helper.hostService.GetHosts("1", false)
 
@@ -92,12 +92,12 @@ func TestHost_GetHosts_HandlesError(t *testing.T) {
 	assert.False(t, res.Success)
 	assert.Equal(t, "failed to get all hosts data - Request ID: 1", res.Error)
 
-	helper.mock.AssertExpectations(t)
+	helper.hostRepoMock.AssertExpectations(t)
 }
 
 func TestHost_GetHostByID_ReturnsExpectedHostData(t *testing.T) {
 	helper := getInitializedHostService()
-	helper.mock.On("Find", bson.M{"agentID": "1"}).Return([]types.Host{hostData[0]}, nil)
+	helper.hostRepoMock.On("Find", bson.M{"agentID": "1"}).Return([]types.Host{hostData[0]}, nil)
 
 	res := helper.hostService.GetHostByID("1", "1", false)
 
@@ -108,12 +108,12 @@ func TestHost_GetHostByID_ReturnsExpectedHostData(t *testing.T) {
 	assert.Equal(t, uint64(10), data[0].Uptime)
 	assert.Equal(t, "test machine 1", data[0].Hostname)
 
-	helper.mock.AssertExpectations(t)
+	helper.hostRepoMock.AssertExpectations(t)
 }
 
 func TestHost_GetHostByID_HandlesDatabaseError(t *testing.T) {
 	helper := getInitializedHostService()
-	helper.mock.On("Find", bson.M{"agentID": "100"}).Return(nil, fmt.Errorf("failed to fetch host data"))
+	helper.hostRepoMock.On("Find", bson.M{"agentID": "100"}).Return(nil, fmt.Errorf("failed to fetch host data"))
 
 	res := helper.hostService.GetHostByID("1", "100", false)
 
@@ -122,12 +122,12 @@ func TestHost_GetHostByID_HandlesDatabaseError(t *testing.T) {
 	assert.False(t, res.Success)
 	assert.Equal(t, "failed to get host data for agent: 100 - Request ID: 1", res.Error)
 
-	helper.mock.AssertExpectations(t)
+	helper.hostRepoMock.AssertExpectations(t)
 }
 
 func TestHost_GetHostByID_HandlesNoHostsError(t *testing.T) {
 	helper := getInitializedHostService()
-	helper.mock.On("Find", bson.M{"agentID": "100"}).Return(nil, nil)
+	helper.hostRepoMock.On("Find", bson.M{"agentID": "100"}).Return(nil, nil)
 
 	res := helper.hostService.GetHostByID("1", "100", false)
 
@@ -136,13 +136,13 @@ func TestHost_GetHostByID_HandlesNoHostsError(t *testing.T) {
 	assert.False(t, res.Success)
 	assert.Equal(t, "failed to get host data for agent: 100 - Request ID: 1", res.Error)
 
-	helper.mock.AssertExpectations(t)
+	helper.hostRepoMock.AssertExpectations(t)
 }
 
 func TestHost_AddHost_InsertsHost(t *testing.T) {
 	helper := getInitializedHostService()
-	helper.mock.On("Find", bson.M{"agentID": "1"}).Return([]types.Host{}, nil)
-	helper.mock.On("Insert", mock.Anything).Return("123", nil)
+	helper.hostRepoMock.On("Find", bson.M{"agentID": "1"}).Return([]types.Host{}, nil)
+	helper.hostRepoMock.On("Insert", mock.Anything).Return("123", nil)
 
 	res := helper.hostService.AddHost("1", "1", &hostData[0])
 
@@ -152,25 +152,25 @@ func TestHost_AddHost_InsertsHost(t *testing.T) {
 	assert.Equal(t, "test machine 1", data.Hostname)
 	assert.Equal(t, "1", data.AgentID)
 
-	helper.mock.AssertExpectations(t)
+	helper.hostRepoMock.AssertExpectations(t)
 }
 
 func TestHost_AddHost_HandlesUpdateExistingHostError(t *testing.T) {
 	helper := getInitializedHostService()
-	helper.mock.On("Find", bson.M{"agentID": "1"}).Return([]types.Host{hostData[0]}, nil)
-	helper.mock.On("UpdateByID", mock.Anything).Return(nil)
+	helper.hostRepoMock.On("Find", bson.M{"agentID": "1"}).Return([]types.Host{hostData[0]}, nil)
+	helper.hostRepoMock.On("UpdateByID", mock.Anything).Return(nil)
 	res := helper.hostService.AddHost("1", "1", &hostData[0])
 
 	assert.Equal(t, 200, res.StatusCode)
 	assert.True(t, res.Success)
 
-	helper.mock.AssertExpectations(t)
+	helper.hostRepoMock.AssertExpectations(t)
 }
 
 func TestHost_AddHost_HandlesFailedToUpdateExistingHostError(t *testing.T) {
 	helper := getInitializedHostService()
-	helper.mock.On("Find", bson.M{"agentID": "1"}).Return([]types.Host{hostData[0]}, nil)
-	helper.mock.On("UpdateByID", mock.Anything).Return(fmt.Errorf("failed to update data"))
+	helper.hostRepoMock.On("Find", bson.M{"agentID": "1"}).Return([]types.Host{hostData[0]}, nil)
+	helper.hostRepoMock.On("UpdateByID", mock.Anything).Return(fmt.Errorf("failed to update data"))
 
 	res := helper.hostService.AddHost("1", "1", &hostData[0])
 
@@ -179,13 +179,13 @@ func TestHost_AddHost_HandlesFailedToUpdateExistingHostError(t *testing.T) {
 	assert.False(t, res.Success)
 	assert.Equal(t, "failed to update data for agent: 1 - Request ID 1", res.Error)
 
-	helper.mock.AssertExpectations(t)
+	helper.hostRepoMock.AssertExpectations(t)
 }
 
 func TestHost_AddHost_HandlesFailedToInsertHostError(t *testing.T) {
 	helper := getInitializedHostService()
-	helper.mock.On("Find", bson.M{"agentID": "1"}).Return([]types.Host{}, nil)
-	helper.mock.On("Insert", mock.Anything).Return("", fmt.Errorf("failed to insert data"))
+	helper.hostRepoMock.On("Find", bson.M{"agentID": "1"}).Return([]types.Host{}, nil)
+	helper.hostRepoMock.On("Insert", mock.Anything).Return("", fmt.Errorf("failed to insert data"))
 
 	res := helper.hostService.AddHost("1", "1", &hostData[1])
 
@@ -194,7 +194,7 @@ func TestHost_AddHost_HandlesFailedToInsertHostError(t *testing.T) {
 	assert.False(t, res.Success)
 	assert.Equal(t, "failed to insert data for agent: 1 - Request ID 1", res.Error)
 
-	helper.mock.AssertExpectations(t)
+	helper.hostRepoMock.AssertExpectations(t)
 }
 
 func TestHost_IsHostOnline_HostIsOnline(t *testing.T) {
@@ -231,4 +231,12 @@ func TestHost_IsHostOnline_HostIsOffline(t *testing.T) {
 	assert.False(t, res)
 
 	healthMock.AssertExpectations(t)
+}
+
+func TestHost_GetHealthDataForHosts_GetsDataForActiveHost(t *testing.T) {
+
+}
+
+func TestHost_GetHealthDataForHosts_GetsDataForInactiveHost(t *testing.T) {
+
 }

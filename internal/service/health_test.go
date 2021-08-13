@@ -16,10 +16,10 @@ import (
 //go:generate mockery --dir=../ -r --name IHostRepository
 
 type testHealthServiceHelper struct {
-	service    IHealthService
-	healthRepo repository.IHealthRepository
-	hostRepo   repository.IHostRepository
-	mock       *mock.Mock
+	healthService IHealthService
+	healthRepo    repository.IHealthRepository
+	hostRepo      repository.IHostRepository
+	mock          *mock.Mock
 }
 
 var (
@@ -41,13 +41,13 @@ func getInitializedHealthService() testHealthServiceHelper {
 	healthRepo := new(mocks.IHealthRepository)
 	hostRepo := new(mocks.IHostRepository)
 	// repo.On
-	service := NewHealthService(healthRepo, hostRepo)
+	healthService := NewHealthService(healthRepo, hostRepo)
 
 	return testHealthServiceHelper{
-		service:    service,
-		hostRepo:   hostRepo,
-		healthRepo: healthRepo,
-		mock:       &healthRepo.Mock,
+		healthService: healthService,
+		hostRepo:      hostRepo,
+		healthRepo:    healthRepo,
+		mock:          &healthRepo.Mock,
 	}
 }
 
@@ -55,7 +55,7 @@ func TestHealth_GetHealth_ReturnsExpectedHealthData(t *testing.T) {
 	helper := getInitializedHealthService()
 	helper.mock.On("Find", bson.M{}).Return(healthData, nil)
 
-	res := helper.service.GetHealth("1")
+	res := helper.healthService.GetHealth("1")
 
 	data := res.Data
 
@@ -72,7 +72,7 @@ func TestHealth_GetHealth_HandlesError(t *testing.T) {
 	helper := getInitializedHealthService()
 	helper.mock.On("Find", bson.M{}).Return(nil, fmt.Errorf("failed to get data from DB"))
 
-	res := helper.service.GetHealth("1")
+	res := helper.healthService.GetHealth("1")
 
 	assert.Equal(t, res.Data, []types.Health{})
 	assert.Equal(t, 500, res.StatusCode)
@@ -86,7 +86,7 @@ func TestHealth_GetHealthByAgentId_ReturnsExpectedHealthData(t *testing.T) {
 	helper := getInitializedHealthService()
 	helper.mock.On("Find", bson.M{"agentID": "1"}).Return([]types.Health{healthData[0]}, nil)
 
-	res := helper.service.GetHealthByAgentID("1", "1")
+	res := helper.healthService.GetHealthByAgentID("1", "1")
 
 	data := res.Data
 
@@ -99,7 +99,7 @@ func TestHealth_GetHealthByAgentId_HandlesError(t *testing.T) {
 	helper := getInitializedHealthService()
 	helper.mock.On("Find", bson.M{"agentID": "4"}).Return(nil, fmt.Errorf("failed to get data from DB"))
 
-	res := helper.service.GetHealthByAgentID("1", "4")
+	res := helper.healthService.GetHealthByAgentID("1", "4")
 
 	assert.Equal(t, res.Data, []types.Health{})
 	assert.Equal(t, 500, res.StatusCode)
@@ -113,7 +113,7 @@ func TestHealth_AddHealth_AddsExpectedHealthData(t *testing.T) {
 	helper := getInitializedHealthService()
 	helper.mock.On("Insert", &healthData[0]).Return("1234567", nil)
 
-	res := helper.service.AddHealth("1", "1", &healthData[0])
+	res := helper.healthService.AddHealth("1", "1", &healthData[0])
 
 	data := res.Data
 
@@ -127,7 +127,7 @@ func TestHealth_AddHealth_HandlesError(t *testing.T) {
 	helper := getInitializedHealthService()
 	helper.mock.On("Insert", &healthData[1]).Return("", fmt.Errorf("failed to insert data into DB"))
 
-	res := helper.service.AddHealth("1", "2", &healthData[1])
+	res := helper.healthService.AddHealth("1", "2", &healthData[1])
 
 	assert.Equal(t, res.Data, []types.Health{})
 	assert.Equal(t, "failed to insert data for agent: 2 - Request ID 1", res.Error)
@@ -136,48 +136,66 @@ func TestHealth_AddHealth_HandlesError(t *testing.T) {
 	helper.mock.AssertExpectations(t)
 }
 
-// func TestHealth_GetLatestHealthDataByAgentID_SortsDataDescending(t *testing.T) {
-// 	healthRepo := new(mocks.IHealthRepository)
-// 	healthService := NewHealthService(healthRepo)
-// 	healthMock := &healthRepo.Mock
+func TestHealth_GetLatestHealthDataByAgentID_SortsDataDescending(t *testing.T) {
+	healthRepo := new(mocks.IHealthRepository)
+	hostRepo := new(mocks.IHostRepository)
+	healthService := NewHealthService(healthRepo, hostRepo)
+	healthMock := &healthRepo.Mock
 
-// 	healthMock.On("Find", mock.Anything).Return([]types.Health{
-// 		{
-// 			AgentID:    "1",
-// 			CreateTime: 1,
-// 		},
-// 		{
-// 			AgentID:    "1",
-// 			CreateTime: 500,
-// 		},
-// 		{
-// 			AgentID:    "1",
-// 			CreateTime: 1000,
-// 		},
-// 	}, nil)
+	healthMock.On("FindWithFilter", mock.Anything, mock.Anything).Return([]types.Health{
+		{
+			AgentID:    "1",
+			CreateTime: 1,
+		},
+		{
+			AgentID:    "1",
+			CreateTime: 500,
+		},
+		{
+			AgentID:    "1",
+			CreateTime: 1000,
+		},
+	}, nil)
 
-// 	res := healthService.GetLatestHealthDataByAgentID("1", hostData[0].AgentID, 2)
-// 	data := res.Data.([]types.Health)
+	res := healthService.GetLatestHealthDataByAgentID("1", hostData[0].AgentID, 2)
+	data := res.Data
 
-// 	assert.Equal(t, 3, len(data))
-// 	assert.Equal(t, int64(1000), data[0].CreateTime)
-// 	assert.Equal(t, int64(1), data[2].CreateTime)
+	assert.Equal(t, 3, len(data))
+	assert.Equal(t, int64(1000), data[0].CreateTime)
+	assert.Equal(t, int64(1), data[2].CreateTime)
 
-// 	healthMock.AssertExpectations(t)
-// }
+	healthMock.AssertExpectations(t)
+}
 
-// func TestHealth_GetLatestHealthDataByAgentID_HandlesError(t *testing.T) {
-// 	healthRepo := new(mocks.IHealthRepository)
-// 	healthService := NewHealthService(healthRepo)
-// 	healthMock := &healthRepo.Mock
+func TestHealth_GetLatestHealthDataByAgentID_HandlesError(t *testing.T) {
+	healthRepo := new(mocks.IHealthRepository)
+	hostRepo := new(mocks.IHostRepository)
+	healthService := NewHealthService(healthRepo, hostRepo)
+	healthMock := &healthRepo.Mock
 
-// 	healthMock.On("Find", mock.Anything).Return(nil, fmt.Errorf("failed to get data"))
+	healthMock.On("FindWithFilter", mock.Anything, mock.Anything).Return(nil, fmt.Errorf("failed to get data"))
 
-// 	res := healthService.GetLatestHealthDataByAgentID("1", hostData[0].AgentID, 2)
+	res := healthService.GetLatestHealthDataByAgentID("1", hostData[0].AgentID, 2)
 
-// 	assert.Equal(t, res.Data, []types.Health{})
-// 	assert.Equal(t, "failed to get latest health data for agent: 1 - Request ID: 1", res.Error)
-// 	assert.False(t, res.Success)
+	assert.Equal(t, res.Data, []types.Health{})
+	assert.Equal(t, "failed to get health data for agent: 1 - Request ID: 1", res.Error)
+	assert.False(t, res.Success)
 
-// 	healthMock.AssertExpectations(t)
-// }
+	healthMock.AssertExpectations(t)
+}
+
+func TestHealth_GetLatestHealthDataForAgents_ReturnsExpectedData(t *testing.T) {
+
+}
+
+func TestHealth_GetLatestHealthDataForAgents_HandlesError(t *testing.T) {
+
+}
+
+func TestHealth_GetHealthForAgentWithOptions_ReturnsExpectedData(t *testing.T) {
+
+}
+
+func TestHealth_GetHealthForAgentWithOptions_HandlesError(t *testing.T) {
+
+}

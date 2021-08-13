@@ -1,0 +1,3 @@
+test:
+	go test -v -coverprofile=coverage.out -race -covermode=atomic ./...
+	go tool cover -html=coverage.out

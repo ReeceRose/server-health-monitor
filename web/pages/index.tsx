@@ -48,11 +48,8 @@ function Index({
       let updateHosts = false;
       response.Data?.forEach((host: Host) => {
         const index = hosts.findIndex((h: Host) => h.agentID == host.agentID);
-        // let updateThisHost = false;
         if (host.health !== null) {
-          if (host.health === undefined)
-            //|| host.health[0].createTime === 0
-            return;
+          if (host.health === undefined) return;
           hosts[index].health?.push(...host.health);
           updateHosts = true;
           const latestHealth = host.health[0];
@@ -62,7 +59,6 @@ function Index({
           ) {
             hosts[index].lastConnected = latestHealth.createTime;
             updateHosts = true;
-            // updateThisHost = true;
           }
         }
 
@@ -80,15 +76,11 @@ function Index({
         if (online != hosts[index].online) {
           hosts[index].online = online;
           updateHosts = true;
-          // updateThisHost = true;
+
           if (host.lastConnected === 0) {
             host.lastConnected = hosts[index].lastConnected;
           }
         }
-
-        // if (updateThisHost) {
-        //   hosts[index] = host;
-        // }
       });
 
       if (updateHosts) {

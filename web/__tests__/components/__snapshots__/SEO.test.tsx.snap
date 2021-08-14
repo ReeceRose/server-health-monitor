@@ -6,6 +6,46 @@ exports[`SEO component matches snapshot 1`] = `
     SEO Test
   </title>
   <meta
+    content="Server Health Monitor"
+    name="application-name"
+  />
+  <meta
+    content="yes"
+    name="apple-mobile-web-app-capable"
+  />
+  <meta
+    content="default"
+    name="apple-mobile-web-app-status-bar-style"
+  />
+  <meta
+    content="SHM"
+    name="apple-mobile-web-app-title"
+  />
+  <meta
+    content="telephone=no"
+    name="format-detection"
+  />
+  <meta
+    content="yes"
+    name="mobile-web-app-capable"
+  />
+  <meta
+    content="/browserconfig.xml"
+    name="msapplication-config"
+  />
+  <meta
+    content="#2B5797"
+    name="msapplication-TileColor"
+  />
+  <meta
+    content="no"
+    name="msapplication-tap-highlight"
+  />
+  <meta
+    content="#000000"
+    name="theme-color"
+  />
+  <meta
     content="SEO Test"
     property="og:title"
   />

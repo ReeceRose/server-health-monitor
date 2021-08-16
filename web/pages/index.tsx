@@ -39,7 +39,7 @@ function Index({
       if (!websocket.current) return;
       websocket.current.close();
     };
-  }, []);
+  }, [webSocketURL]);
 
   useEffect(() => {
     if (!websocket.current) return;

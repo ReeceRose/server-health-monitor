@@ -22,7 +22,7 @@ func TestTime_GetMinimumLastHealthPacketTime_ReturnsExpectedTimeWhenDelayIsPasse
 }
 
 func TestTime_GetMinimumLastHealthPacketTime_ReturnsExpectedTimeWhenFailedToConvertVariable(t *testing.T) {
-	os.Setenv(consts.HEALTH_DELAY, "ABC")
+	os.Setenv(consts.MINUTES_SINCE_HEALTH_SHOW_OFFLINE, "ABC")
 	assert.Equal(t, int64(1628042610000000000), GetMinimumLastHealthPacketTime(time.Unix(setTime, 0), 0))
 }
 

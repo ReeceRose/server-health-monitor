@@ -35,6 +35,8 @@ func getDefaultForKey(key string) string {
 		return "3000"
 	case consts.API_URL:
 		return "https://localhost:3000/api/v1/"
+	case consts.WS_URL:
+		return "wss://localhost:3000/ws/v1/"
 	case consts.CERT_DIR:
 		return "certs"
 	case consts.CLIENT_CERT:
@@ -53,8 +55,10 @@ func getDefaultForKey(key string) string {
 		return "admin"
 	case consts.LOG_FILE:
 		return "server-health-monitor.log"
-	case consts.HEALTH_DELAY:
+	case consts.MINUTES_SINCE_HEALTH_SHOW_OFFLINE:
 		return "5"
+	case consts.DC_HEALTH_DELAY:
+		return "30"
 	case consts.MINUTES_TO_INCLUDE_HEALTH:
 		return "5"
 	case consts.DATA_WEBSOCKET_DELAY:

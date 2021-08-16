@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"strconv"
 	"time"
 
 	"github.com/PR-Developers/server-health-monitor/internal/client"
@@ -23,8 +24,10 @@ func main() {
 		panic(err)
 	}
 
-	// TODO: Read from command line
-	var delay time.Duration = 30 // delay in seconds
+	delay, err := strconv.Atoi(utils.GetVariable(consts.MINUTES_SINCE_HEALTH_SHOW_OFFLINE))
+	if err != nil {
+		delay = 30
+	}
 
 	payload := new(bytes.Buffer)
 	json.NewEncoder(payload).Encode(host.GetInfo())
@@ -44,6 +47,6 @@ func main() {
 		_, statusCode, _ := client.Post("health/", payload)
 		log.Infof("Sent health data and got a status code of %v", statusCode)
 		// Delay for X seconds
-		time.Sleep(time.Second * delay)
+		time.Sleep(time.Second * time.Duration(delay))
 	}
 }

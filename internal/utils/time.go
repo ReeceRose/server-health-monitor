@@ -11,7 +11,7 @@ import (
 func GetMinimumLastHealthPacketTime(now time.Time, delay int) int64 {
 	if delay == 0 {
 		var err error
-		delay, err = strconv.Atoi(GetVariable(consts.HEALTH_DELAY))
+		delay, err = strconv.Atoi(GetVariable(consts.MINUTES_SINCE_HEALTH_SHOW_OFFLINE))
 		if err != nil {
 			delay = 2
 		}

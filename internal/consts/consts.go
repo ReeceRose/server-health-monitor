@@ -3,8 +3,10 @@ package consts
 const (
 	// Constant keys
 
-	// API_URL is a key used to lookup the api url (Used by: data-collector)
+	// API_URL is a key used to lookup the api url (Used by: data-collector/web)
 	API_URL = "API_URL"
+	// WS_URL is a key used to lookup the websocket api url (used by: web)
+	WS_URL = "WS_URL"
 	// API_PORT is a key used to lookup the api port (Used by: data-collector)
 	API_PORT = "API_PORT"
 	// CERT_DIR is a key used to lookup the certificate directory (Used by: api/docker)
@@ -25,12 +27,14 @@ const (
 	DB_PASS = "DB_PASS"
 	// LOG_FILE is a key used to lookup the location of the log file (Used by: api/data-collector)
 	LOG_FILE = "LOG_FILE"
-	// HEALTH_DELAY is a key used to lookup the minimum delay since last health reported (in minutes) to show server as offline (Used by: api)
-	HEALTH_DELAY = "HEALTH_DELAY"
+	// MINUTES_SINCE_HEALTH_SHOW_OFFLINE is a key used to lookup the minimum delay since last health reported (in minutes) to show server as offline (Used by: api)
+	MINUTES_SINCE_HEALTH_SHOW_OFFLINE = "MINUTES_SINCE_HEALTH_SHOW_OFFLINE"
 	// MINUTES_TO_INCLUDE_HEALTH is a key used to lookup the amount of minutes in the past to which we will include the health data for (Used by: api)
 	MINUTES_TO_INCLUDE_HEALTH = "MINUTES_TO_INCLUDE_HEALTH"
 	// DATA_WEBSOCKET_DELAY is a key used to lookup the delay (in seconds) between sending more data via websockets (Used by: api)
 	DATA_WEBSOCKET_DELAY = "DATA_WEBSOCKET_DELAY"
+	// DC_HEALTH_DELAY is a key used to lookup the delay (in seconds) between sending helath information from data-collector to api (Used by: api)
+	DC_HEALTH_DELAY = "DC_HEALTH_DELAY"
 	// Constant filenames
 
 	// AGENT_STORE_FILENAME is the file location of agent filestore (Used by: data-collector)

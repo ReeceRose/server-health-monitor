@@ -27,11 +27,13 @@ function Index({
     alert(error);
   }
 
+  const webSocketURL = process.env.WS_URL || 'wss://localhost:3000/ws/v1/';
+
   const [hosts, setHosts] = useState(initial_hosts);
   const websocket = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    websocket.current = new WebSocket('wss://localhost:3000/ws/v1/health/');
+    websocket.current = new WebSocket(webSocketURL + 'health/');
 
     return () => {
       if (!websocket.current) return;
@@ -70,7 +72,10 @@ function Index({
           )
         );
         const maximumTimeSinceLastConnect =
-          (parseInt(process.env.HEALTH_DELAY || '5') || 5) * 60 * 1000;
+          (parseInt(process.env.MINUTES_SINCE_HEALTH_SHOW_OFFLINE || '5') ||
+            5) *
+          60 *
+          1000;
         const online =
           now.valueOf() - lastConnected.valueOf() < maximumTimeSinceLastConnect;
         if (online != hosts[index].online) {

@@ -92,6 +92,7 @@ func (controller *HealthController) GetHealthWS(c echo.Context) error {
 	if err != nil {
 		delay = 30
 	}
+	time.Sleep(time.Second * time.Duration(delay))
 
 	log := logger.Instance()
 	requestID := c.Response().Header().Get("X-Request-ID")

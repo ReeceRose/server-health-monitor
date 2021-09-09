@@ -22,5 +22,19 @@ var (
 // Info returns host information
 func (h *GopsHost) Info() (*types.Host, error) {
 	host, err := host.Info()
-	return (*types.Host)(host), err
+	return &types.Host{
+		Hostname:             host.Hostname,
+		Uptime:               host.Uptime,
+		BootTime:             host.BootTime,
+		Procs:                host.Procs,
+		OS:                   host.OS,
+		Platform:             host.Platform,
+		PlatformFamily:       host.PlatformFamily,
+		PlatformVersion:      host.PlatformVersion,
+		KernelVersion:        host.KernelVersion,
+		KernelArch:           host.KernelArch,
+		VirtualizationRole:   host.VirtualizationRole,
+		VirtualizationSystem: host.VirtualizationSystem,
+		HostID:               host.HostID,
+	}, err
 }

@@ -13,33 +13,50 @@ type StandardResponse struct {
 	Success    bool
 }
 
+type HealthReponse struct {
+	Data       []Health
+	StatusCode int
+	Error      string
+	Success    bool
+}
+
+type HostReponse struct {
+	Data       []Host
+	StatusCode int
+	Error      string
+	Success    bool
+}
+
 // Health contains all information realted to an agents health
 type Health struct {
-	// TODO: decide if host should be apart of 'health' or just apart of 'host'
-	// (host information should mostly stay the same, and maybe we'll just send it at startup,
-	// we can either re-send non-static items like uptime or maybe calculate that based off of boottime?)
 	ID         primitive.ObjectID `json:"_id" bson:"_id"`
-	Host       Host               `json:"host" bson:"host"`
-	AgentID    string             `json:"agentID" bson:"agentID"` // NOTE: Host.HostID is an alternative solution to AgentID
+	AgentID    string             `json:"agentID" bson:"agentID"`
 	CreateTime int64              `json:"createTime" bson:"createTime"`
-	UpdateTime int64              `json:"updateTime" bson:"updateTime"`
+	Uptime     uint64             `json:"uptime" bson:"uptime"`
 }
 
 // Host contains all information about the agent/host
 type Host struct {
-	Hostname             string `json:"hostname" bson:"hostname"`
-	Uptime               uint64 `json:"uptime" bson:"uptime"`
-	BootTime             uint64 `json:"bootTime" bson:"bootTime"`
-	Procs                uint64 `json:"procs" bson:"procs"`
-	OS                   string `json:"os" bson:"os"`
-	Platform             string `json:"platform" bson:"platform"`
-	PlatformFamily       string `json:"platformFamily" bson:"platformFamily"`
-	PlatformVersion      string `json:"platformVersion" bson:"platformVersion"`
-	KernelVersion        string `json:"kernelVersion" bson:"kernelVersion"`
-	KernelArch           string `json:"kernelArch" bson:"kernelArch"`
-	VirtualizationSystem string `json:"virtualizationSystem" bson:"virtualizationSystem"`
-	VirtualizationRole   string `json:"virtualizationRole" bson:"virtualizationRole"`
-	HostID               string `json:"hostId" bson:"hostId"`
+	ID                   primitive.ObjectID `json:"_id" bson:"_id"`
+	AgentID              string             `json:"agentID" bson:"agentID"` // NOTE: Host.HostID is an alternative solution to AgentID
+	CreateTime           int64              `json:"createTime" bson:"createTime"`
+	UpdateTime           int64              `json:"updateTime" bson:"updateTime"`
+	Hostname             string             `json:"hostname" bson:"hostname"`
+	Uptime               uint64             `json:"uptime" bson:"uptime"`
+	BootTime             uint64             `json:"bootTime" bson:"bootTime"`
+	Procs                uint64             `json:"procs" bson:"procs"`
+	OS                   string             `json:"os" bson:"os"`
+	Platform             string             `json:"platform" bson:"platform"`
+	PlatformFamily       string             `json:"platformFamily" bson:"platformFamily"`
+	PlatformVersion      string             `json:"platformVersion" bson:"platformVersion"`
+	KernelVersion        string             `json:"kernelVersion" bson:"kernelVersion"`
+	KernelArch           string             `json:"kernelArch" bson:"kernelArch"`
+	VirtualizationSystem string             `json:"virtualizationSystem" bson:"virtualizationSystem"`
+	VirtualizationRole   string             `json:"virtualizationRole" bson:"virtualizationRole"`
+	HostID               string             `json:"hostId" bson:"hostId"`
+	Online               bool               `json:"online" bson:",omitempty"`
+	LastConnected        int64              `json:"lastConnected" bson:",omitempty"`
+	Health               []Health           `json:"health" bson:",omitempty"`
 }
 
 // AgentInformation contains an ID which is used to differentiate between different agents

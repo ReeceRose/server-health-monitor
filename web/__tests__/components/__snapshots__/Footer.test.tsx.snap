@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Footer component matches snapshot 1`] = `
+<DocumentFragment>
+  <footer
+    class="block py-4 absoulte"
+  >
+    <div
+      class="container px-24 mx-auto"
+    >
+      <hr
+        class="mb-4 border-gray-200 border-b-1"
+      />
+      <div
+        class="flex flex-wrap items-center justify-center md:justify-between"
+      >
+        <div
+          class="w-full px-4 md:w-6/12"
+        >
+          <div
+            class="py-1 text-sm font-semibold text-center text-gray-500 md:text-left"
+          >
+            Copyright © 2021 
+            <a
+              class="py-1 text-sm font-semibold text-gray-500 hover:text-gray-700"
+              href="https://github.com/PR-Developers/"
+              rel="noreferrer"
+              target="_blank"
+            >
+              PR-Developers
+            </a>
+          </div>
+        </div>
+        <div
+          class="w-full px-4 md:w-6/12"
+        >
+          <ul
+            class="flex flex-wrap justify-center list-none md:justify-end"
+          >
+            <li>
+              <a
+                class="block px-3 py-1 text-sm font-semibold text-gray-600 hover:text-gray-800"
+                href="https://github.com/PR-Developers/server-health-monitor/"
+                rel="noreferrer"
+                target="_blank"
+              >
+                GitHub
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+</DocumentFragment>
+`;

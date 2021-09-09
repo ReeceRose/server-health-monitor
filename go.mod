@@ -8,4 +8,5 @@ require (
 	github.com/shirou/gopsutil/v3 v3.21.6
 	github.com/stretchr/testify v1.7.0
 	go.mongodb.org/mongo-driver v1.6.0
+	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d
 )

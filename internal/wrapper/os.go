@@ -7,12 +7,12 @@ import (
 
 // OperatingSystem is an interface which provides method signatures for interacting with the operating system
 type OperatingSystem interface {
-	OpenFile(string, int, fs.FileMode) (*os.File, error)
-	ReadFile(string) ([]byte, error)
-	WriteFile(string, []byte, os.FileMode) error
-	IsNotExist(error) bool
-	Stat(string) (os.FileInfo, error)
-	Remove(string) error
+	OpenFile(name string, flag int, perm fs.FileMode) (*os.File, error)
+	ReadFile(name string) ([]byte, error)
+	WriteFile(name string, data []byte, perm os.FileMode) error
+	IsNotExist(err error) bool
+	Stat(name string) (os.FileInfo, error)
+	Remove(name string) error
 }
 
 // DefaultOS is the wrapper for the default OS

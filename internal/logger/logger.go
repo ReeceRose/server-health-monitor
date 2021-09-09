@@ -12,9 +12,12 @@ import (
 
 // Logger is an interface which provides method signatures for logging to files/console
 type Logger interface {
-	Info(string)
-	Warning(string)
-	Error(string)
+	Info(msg string)
+	Infof(msg string, args ...interface{})
+	Warning(msg string)
+	Warningf(msg string, args ...interface{})
+	Error(msg string)
+	Errorf(msg string, args ...interface{})
 	Logger() *log.Logger
 }
 
@@ -56,14 +59,29 @@ func (l *standardLogger) Info(message string) {
 	l.infoLogger.Println(message)
 }
 
+// Infof should be used to log generic log messages with special formatting
+func (l *standardLogger) Infof(format string, args ...interface{}) {
+	l.infoLogger.Printf(format+"\n", args...)
+}
+
 // Warning should be used to log events of concern
 func (l *standardLogger) Warning(message string) {
 	l.warningLogger.Println(message)
 }
 
+// Warningf should be used to log events of concern with special formatting
+func (l *standardLogger) Warningf(format string, args ...interface{}) {
+	l.warningLogger.Printf(format+"\n", args...)
+}
+
 // Error should be used to log unexpected behaviour
 func (l *standardLogger) Error(message string) {
 	l.errorLogger.Println(message)
+}
+
+// Errorf should be used to log unexpected behaviour with special formatting
+func (l *standardLogger) Errorf(format string, args ...interface{}) {
+	l.errorLogger.Printf(format+"\n", args...)
 }
 
 // Logger returns a generic instance of a default logger

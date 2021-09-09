@@ -8,6 +8,7 @@ import (
 	"github.com/PR-Developers/server-health-monitor/internal/logger"
 	"github.com/PR-Developers/server-health-monitor/internal/types"
 	"github.com/PR-Developers/server-health-monitor/internal/utils"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type healthRepository struct {
@@ -21,8 +22,7 @@ var (
 // NewHealthRepository returns an instanced health repository
 func NewHealthRepository() IHealthRepository {
 	db, _ := database.Instance()
-	// client := db.Client()
-	// client.Database()
+
 	return &healthRepository{
 		baseRepository: &baseRepository{
 			db:             db,
@@ -35,7 +35,12 @@ func NewHealthRepository() IHealthRepository {
 
 // Find all health data given a certain query
 func (r *healthRepository) Find(query interface{}) ([]types.Health, error) {
-	cursor, err := r.collection.Find(r.db.Context(), query)
+	return r.FindWithFilter(query, nil)
+}
+
+// FindWithFilter returns all health data given a certain query and options
+func (r *healthRepository) FindWithFilter(query interface{}, options *options.FindOptions) ([]types.Health, error) {
+	cursor, err := r.collection.Find(r.db.Context(), query, options)
 	if err != nil {
 		msg := fmt.Sprintf("failed to read data from collection: %s with query: %s (%s)", r.collectionName, query, err.Error())
 		r.log.Error(msg)
@@ -47,7 +52,7 @@ func (r *healthRepository) Find(query interface{}) ([]types.Health, error) {
 	for cursor.Next(r.db.Context()) {
 		var record types.Health
 		if err = cursor.Decode(&record); err != nil {
-			r.log.Warning(fmt.Sprintf("failed to read record on %s with query: %s", r.collectionName, query))
+			r.log.Warningf("failed to read record on %s with query: %s", r.collectionName, query)
 		}
 		data = append(data, record)
 	}
@@ -55,7 +60,7 @@ func (r *healthRepository) Find(query interface{}) ([]types.Health, error) {
 	return data, nil
 }
 
-// Insert a single record into the database
+// Insert a single health record into the database
 func (r *healthRepository) Insert(data *types.Health) (string, error) {
 	res, err := r.collection.InsertOne(r.db.Context(), data)
 	if err != nil {

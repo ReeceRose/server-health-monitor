@@ -18,6 +18,7 @@ import (
 
 func resetLogger() {
 	logger = nil
+
 	osWrapper = &wrapper.DefaultOS{}
 }
 
@@ -58,6 +59,18 @@ func TestLogger_Info_WritesInfoTag(t *testing.T) {
 	osWrapper.Remove(consts.LOG_FILE)
 }
 
+func TestLogger_Infof_WritesExpectedValue(t *testing.T) {
+	resetLogger()
+
+	log := Instance()
+
+	log.Infof("generic message %d", 1)
+	data, _ := osWrapper.ReadFile(utils.GetVariable(consts.LOG_FILE))
+	assert.Contains(t, string(data), "INFO:")
+	assert.Contains(t, string(data), "generic message 1")
+	osWrapper.Remove(consts.LOG_FILE)
+}
+
 func TestLogger_Warning_WritesWarningTag(t *testing.T) {
 	resetLogger()
 
@@ -67,6 +80,18 @@ func TestLogger_Warning_WritesWarningTag(t *testing.T) {
 	data, _ := osWrapper.ReadFile(utils.GetVariable(consts.LOG_FILE))
 	assert.Contains(t, string(data), "WARNING:")
 
+	osWrapper.Remove(consts.LOG_FILE)
+}
+
+func TestLogger_Warningf_WritesExpectedValue(t *testing.T) {
+	resetLogger()
+
+	log := Instance()
+
+	log.Warningf("generic message %d", 2)
+	data, _ := osWrapper.ReadFile(utils.GetVariable(consts.LOG_FILE))
+	assert.Contains(t, string(data), "WARNING:")
+	assert.Contains(t, string(data), "generic message 2")
 	osWrapper.Remove(consts.LOG_FILE)
 }
 
@@ -80,6 +105,18 @@ func TestLogger_Error_WritesErrorTag(t *testing.T) {
 
 	assert.Contains(t, string(data), "ERROR:")
 
+	osWrapper.Remove(consts.LOG_FILE)
+}
+
+func TestLogger_Errorf_WritesExpectedValue(t *testing.T) {
+	resetLogger()
+
+	log := Instance()
+
+	log.Errorf("generic message %d", 3)
+	data, _ := osWrapper.ReadFile(utils.GetVariable(consts.LOG_FILE))
+	assert.Contains(t, string(data), "ERROR:")
+	assert.Contains(t, string(data), "generic message 3")
 	osWrapper.Remove(consts.LOG_FILE)
 }
 
